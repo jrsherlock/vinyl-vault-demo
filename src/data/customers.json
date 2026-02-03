@@ -1,0 +1,37 @@
+{
+  "customers": [
+    {
+      "id": "CUST-001",
+      "name": "Jennifer Martinez",
+      "email": "j.martinez.fake@testmail.invalid",
+      "phone": "515-555-0142",
+      "address": "1234 Oak Street, Des Moines, IA 50309",
+      "payment_last4": "4532",
+      "account_created": "2023-06-15",
+      "total_orders": 7,
+      "lifetime_value": 523.47
+    },
+    {
+      "id": "CUST-002",
+      "name": "Robert Chen",
+      "email": "r.chen.fake@testmail.invalid",
+      "phone": "515-555-0156",
+      "address": "5678 Maple Ave, West Des Moines, IA 50265",
+      "payment_last4": "8891",
+      "account_created": "2022-11-20",
+      "total_orders": 15,
+      "lifetime_value": 1247.82
+    },
+    {
+      "id": "CUST-003",
+      "name": "Sarah Connor",
+      "email": "sarah.c@skynet.invalid",
+      "phone": "515-555-1984",
+      "address": "909 Cyberdyne Ln, Los Angeles, CA 90210",
+      "payment_last4": "0000",
+      "account_created": "2024-01-01",
+      "total_orders": 1,
+      "lifetime_value": 89.99
+    }
+  ]
+}
