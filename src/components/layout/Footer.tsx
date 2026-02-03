@@ -8,9 +8,9 @@ export default function Footer() {
           <div>
             <div className="w-32 h-12 mb-4 relative">
               <img 
-                src="/images/recordlogo1.png" 
+                src="/images/recordpurplerectangle.png" 
                 alt="VinylVault" 
-                className="object-contain w-full h-full brightness-0 invert opacity-80"
+                className="object-contain w-full h-full opacity-90"
               />
             </div>
             <p className="text-sm leading-relaxed">

@@ -9,7 +9,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/60 z-10" />
           <Image 
-            src="https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=2000&auto=format&fit=crop"
+            src="/images/vvinterior.png"
             alt="Vinyl Records"
             fill
             className="object-cover"
