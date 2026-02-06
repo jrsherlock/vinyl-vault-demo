@@ -1,6 +1,7 @@
 import "@/app/globals.css";
 import ChallengeOverlay from "@/components/game/ChallengeOverlay";
 import ChatWidget from "@/components/chat/ChatWidget";
+import MissionBriefing from "@/components/game/MissionBriefing";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import { CartProvider } from "@/context/CartContext";
@@ -39,6 +40,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <ChallengeOverlay />
+          <MissionBriefing />
           <ChatWidget />
         </CartProvider>
       </body>

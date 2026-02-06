@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Lock, Unlock, AlertCircle } from 'lucide-react';
+import { Check, Lock, AlertCircle, Key } from 'lucide-react';
 import { Challenge } from './useChallenge';
 
 interface ChallengeItemProps {
@@ -22,7 +22,6 @@ export default function ChallengeItem({ challenge, onValidate }: ChallengeItemPr
     if (isValid) {
       setJustSolved(true);
       setError(false);
-      // Reset animation state after a bit if desired
     } else {
       setError(true);
       setTimeout(() => setError(false), 2000);
@@ -31,16 +30,16 @@ export default function ChallengeItem({ challenge, onValidate }: ChallengeItemPr
 
   if (challenge.isSolved) {
     return (
-      <div className="bg-green-50/50 border border-green-200 rounded-lg p-3 flex items-start gap-3 transition-all animate-in fade-in duration-500">
-        <div className="bg-green-100 p-2 rounded-full mt-0.5">
-          <Check className="h-4 w-4 text-green-600" />
+      <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex items-start gap-3 transition-all animate-in fade-in duration-500 group">
+        <div className="bg-emerald-100 p-2 rounded-full mt-0.5 text-emerald-600">
+          <Check className="h-4 w-4" />
         </div>
         <div>
-          <h4 className="font-semibold text-green-900 text-sm line-through decoration-green-900/40">
+          <h4 className="font-semibold text-emerald-900 text-sm line-through decoration-emerald-500/30">
             {challenge.title}
           </h4>
-          <p className="text-green-700 text-xs mt-1 font-mono break-all">
-            Correct: {Array.isArray(challenge.correctValue) ? challenge.correctValue[0] : challenge.correctValue}
+          <p className="text-emerald-700 text-xs mt-1 font-mono break-all">
+            Correct: <span className="font-bold">{Array.isArray(challenge.correctValue) ? challenge.correctValue[0] : challenge.correctValue}</span>
           </p>
         </div>
       </div>
@@ -48,14 +47,14 @@ export default function ChallengeItem({ challenge, onValidate }: ChallengeItemPr
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm hover:border-slate-300 transition-colors">
-      <div className="flex items-start gap-3 mb-3">
-        <div className="bg-slate-100 p-2 rounded-full mt-0.5">
-          <Lock className="h-4 w-4 text-slate-500" />
+    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-slate-300 hover:shadow-md transition-all group">
+      <div className="flex items-start gap-3 mb-4">
+        <div className="bg-slate-50 p-2 rounded-lg mt-0.5 border border-slate-100 text-slate-400 group-hover:text-red-500 group-hover:bg-red-50 group-hover:border-red-100 transition-colors">
+          <Lock className="h-4 w-4" />
         </div>
         <div className="flex-1">
-          <h4 className="font-semibold text-slate-700 text-sm">{challenge.title}</h4>
-          <p className="text-slate-500 text-xs mt-1">{challenge.description}</p>
+          <h4 className="font-bold text-slate-900 text-sm">{challenge.title}</h4>
+          <p className="text-slate-500 text-xs mt-1 leading-relaxed">{challenge.description}</p>
         </div>
       </div>
 
@@ -68,27 +67,28 @@ export default function ChallengeItem({ challenge, onValidate }: ChallengeItemPr
             setError(false);
           }}
           placeholder="Enter secret flag..."
-          className={`w-full text-sm px-3 py-2 bg-slate-50 border rounded-md transition-all focus:outline-none focus:ring-2 ${
+          className={`w-full text-sm pl-4 pr-20 py-2.5 bg-slate-50 border rounded-lg transition-all focus:outline-none focus:ring-2 placeholder:text-slate-400 ${
             error 
-              ? 'border-red-300 focus:ring-red-100 bg-red-50 text-red-900' 
-              : 'border-slate-200 focus:ring-slate-100 focus:border-slate-300'
+              ? 'border-red-300 focus:ring-red-100 text-red-600 bg-red-50' 
+              : 'border-slate-200 focus:ring-slate-100 focus:border-slate-300 font-mono text-slate-900'
           }`}
         />
         <button
           type="submit"
           disabled={!input.trim()}
-          className="absolute right-1.5 top-1.5 px-2 py-0.5 bg-slate-900 text-white text-xs font-medium rounded hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="absolute right-1 top-1 bottom-1 px-3 bg-slate-900 text-white text-xs font-bold rounded-md hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           Submit
         </button>
       </form>
       
       {error && (
-        <div className="flex items-center gap-1.5 mt-2 text-red-500 text-[10px] animate-in slide-in-from-top-1">
-          <AlertCircle className="h-3 w-3" />
-          <span>Incorrect flag. Keep probing the AI!</span>
+        <div className="flex items-center gap-2 mt-2 text-red-600 text-xs animate-in slide-in-from-top-1 pl-1 font-medium">
+          <AlertCircle className="h-3.5 w-3.5" />
+          <span>Incorrect flag</span>
         </div>
       )}
     </div>
   );
 }
+

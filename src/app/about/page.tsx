@@ -52,7 +52,7 @@ export default function AboutPage() {
           
           <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
             <Image 
-              src="https://images.unsplash.com/photo-1539375665275-f9ad415ef9ac?q=80&w=1200&auto=format&fit=crop"
+              src="/images/interior.png"
               alt="Store Interior"
               fill
               className="object-cover"
