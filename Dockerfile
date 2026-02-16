@@ -33,7 +33,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/src/data ./src/data
-COPY --from=builder /app/src/lib/ai/system-prompt.txt ./src/lib/ai/system-prompt.txt
+COPY --from=builder /app/src/lib/ai ./src/lib/ai
 
 USER nextjs
 
