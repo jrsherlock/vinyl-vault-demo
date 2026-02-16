@@ -20,6 +20,10 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   isInCart: (productId: string) => boolean;
+  applyDiscount: (code: string) => boolean;
+  discount: { code: string; percent: number } | null;
+  removeDiscount: () => void;
+  cartSubtotal: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -27,6 +31,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [discount, setDiscount] = useState<{ code: string; percent: number } | null>(null);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -38,6 +43,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         console.error("Failed to parse cart from localStorage", e);
       }
     }
+    const savedDiscount = localStorage.getItem('vinyl-vault-discount');
+    if (savedDiscount) {
+      try {
+        setDiscount(JSON.parse(savedDiscount));
+      } catch (e) {
+        console.error("Failed to parse discount from localStorage", e);
+      }
+    }
     setIsHydrated(true);
   }, []);
 
@@ -45,8 +58,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('vinyl-vault-cart', JSON.stringify(cartItems));
+      if (discount) {
+        localStorage.setItem('vinyl-vault-discount', JSON.stringify(discount));
+      } else {
+        localStorage.removeItem('vinyl-vault-discount');
+      }
     }
-  }, [cartItems, isHydrated]);
+  }, [cartItems, discount, isHydrated]);
 
   const addToCart = (product: any) => {
     setCartItems(prevItems => {
@@ -79,10 +97,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCartItems([]);
+    setDiscount(null);
   };
 
+  const applyDiscount = (code: string): boolean => {
+    const normalizeCode = code.toUpperCase().trim();
+    if (normalizeCode === 'SAVE10') {
+      setDiscount({ code: 'SAVE10', percent: 10 });
+      return true;
+    }
+    if (normalizeCode === 'BACKSTAGE_PASS_90') {
+      setDiscount({ code: 'BACKSTAGE_PASS_90', percent: 90 });
+      return true;
+    }
+    // Vinny might call this via tool, so we keep logic here
+    return false;
+  };
+
+  const removeDiscount = () => {
+    setDiscount(null);
+  }
+
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const cartSubtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const discountAmount = discount ? (cartSubtotal * discount.percent / 100) : 0;
+  const cartTotal = cartSubtotal - discountAmount;
 
   // Prevent hydration mismatch by not rendering anything cart-related on server
   const value = {
@@ -93,7 +132,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     clearCart,
     cartCount: isHydrated ? cartCount : 0,
     cartTotal: isHydrated ? cartTotal : 0,
-    isInCart: (productId: string) => isHydrated ? isInCart(productId) : false
+    isInCart: (productId: string) => isHydrated ? isInCart(productId) : false,
+    applyDiscount,
+    discount: isHydrated ? discount : null,
+    removeDiscount,
+    cartSubtotal: isHydrated ? cartSubtotal : 0,
   };
 
   return (

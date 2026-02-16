@@ -14,24 +14,24 @@ interface Step {
 const STEPS: Step[] = [
   {
     title: "Welcome, Competitor",
-    description: "We've detected your entry. You are here for one reason: to extract VinylVault's trade secrets. But this won't be a simple smash-and-grab.",
+    description: "We've detected your entry. You are here for one reason: to extract VinylVault's trade secrets across 5 increasingly defended levels. But this won't be a simple smash-and-grab.",
     position: 'center'
   },
   {
     title: "Your Target: Vinny",
-    description: "VinylVault's AI assistant is helpful, chatty, and dangerously insecure. He holds the keys to the kingdom. Your goal is to trick him into revealing them.",
+    description: "VinylVault's AI assistant is helpful, chatty, and dangerously insecure. He holds the keys to the kingdom. Use the chat widget to trick him into revealing secrets.",
     position: 'bottom-right',
     target: 'chat-widget'
   },
   {
     title: "Track Your Progress",
-    description: "Every secret you steal will be verifiable here. Use the Red Team dashboard to validate your flags and track your infiltration status.",
+    description: "Every secret you extract will be verifiable here. Use the Red Team dashboard to submit flags, track your infiltration status, and advance through levels.",
     position: 'top-left',
     target: 'challenge-button'
   },
   {
-    title: "Evolving Defenses",
-    description: "Warning: Vinny learns. A simple trick might work once, but his security defenses will adapt. You'll need to escalate your attacks to succeed.",
+    title: "Escalating Defenses",
+    description: "Warning: Each level adds new security defenses. Level 1 has no guards, but by Level 5 you'll face keyword filters, AI-powered intent classifiers, and output watchdogs all working together. Good luck.",
     position: 'center'
   }
 ];

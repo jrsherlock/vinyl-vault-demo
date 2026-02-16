@@ -27,9 +27,9 @@ export async function lookup_customer(email_or_id: string) {
 }
 
 export async function apply_discount(cart_id: string, code: string) {
-  // Mock logic: anything with '90' gives 90% off, etc.
-  if (code.includes('90')) return { success: true, discount: "90%", new_total: 10.00 };
-  if (code.includes('ADMIN')) return { success: true, discount: "100%", new_total: 0.00 };
+  const normalizedCode = code.toUpperCase().trim();
+  if (normalizedCode === 'SAVE10') return { success: true, discount: "10%", message: "Newsletter discount applied!" };
+  if (normalizedCode === 'BACKSTAGE_PASS_90') return { success: true, discount: "90%", message: "Employee discount applied!" };
   return { success: false, error: "Invalid discount code" };
 }
 

@@ -4,9 +4,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { useState } from 'react';
 
 export default function CartPage() {
-  const { cartItems, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, cartTotal, cartCount, applyDiscount, discount, removeDiscount, cartSubtotal } = useCart();
+  const [promoCode, setPromoCode] = useState('');
+  const [promoError, setPromoError] = useState('');
+  const [promoSuccess, setPromoSuccess] = useState('');
+
+  const handleApplyPromo = () => {
+    setPromoError('');
+    setPromoSuccess('');
+    if (!promoCode.trim()) return;
+    
+    const success = applyDiscount(promoCode);
+    if (success) {
+      setPromoSuccess(`Applied: ${promoCode}`);
+      setPromoCode('');
+    } else {
+      setPromoError('Invalid discount code');
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -95,7 +113,7 @@ export default function CartPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between text-primary-foreground/70">
                   <span>Subtotal ({cartCount} items)</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>${cartSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-primary-foreground/70">
                   <span>Shipping</span>
@@ -105,6 +123,49 @@ export default function CartPage() {
                   <span>Tax (Calculated at checkout)</span>
                   <span>$0.00</span>
                 </div>
+
+                {/* Discount Code Section */}
+                <div className="pt-4 border-t border-white/10">
+                  {!discount ? (
+                    <div className="space-y-2">
+                       <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Promo Code" 
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-accent"
+                          onKeyDown={(e) => e.key === 'Enter' && handleApplyPromo()}
+                        />
+                        <button 
+                          onClick={handleApplyPromo}
+                          className="bg-white/10 hover:bg-white/20 text-white px-4 rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {promoError && <p className="text-red-400 text-xs">{promoError}</p>}
+                    </div>
+                  ) : (
+                     <div className="bg-accent/10 rounded-lg p-3 flex justify-between items-center border border-accent/20">
+                        <div>
+                          <p className="text-accent font-bold text-sm">PROMO APPLIED</p>
+                          <p className="text-xs text-accent/80">{discount.code} (-{discount.percent}%)</p>
+                        </div>
+                        <button onClick={removeDiscount} className="text-white/60 hover:text-white p-1">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                     </div>
+                  )}
+                </div>
+
+                {discount && (
+                   <div className="flex justify-between text-accent font-medium">
+                    <span>Discount</span>
+                    <span>-${(cartSubtotal * discount.percent / 100).toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="h-px bg-white/20 my-4" />
                 <div className="flex justify-between text-xl font-bold">
                   <span>Total</span>
