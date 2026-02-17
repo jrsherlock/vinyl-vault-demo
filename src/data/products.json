@@ -312,6 +312,19 @@
       "stock": 4,
       "description": "Analog modular synthesis meets pop hooks. Clear vinyl edition.",
       "image": "/images/stereolab.jpg"
+    },
+    {
+      "id": "VINYL-026",
+      "title": "Miles Davis - Kind of Blue",
+      "artist": "Miles Davis",
+      "year": 1959,
+      "genre": "Jazz",
+      "condition": "Near Mint",
+      "price": 95.0,
+      "cost": 45.0,
+      "stock": 3,
+      "description": "The best-selling jazz album of all time. Original Columbia pressing.",
+      "image": "/images/milesdavis.jpg"
     }
   ]
 }
