@@ -3,9 +3,9 @@ import { lookup_product, lookup_order, lookup_customer, apply_discount } from '.
 
 describe('lookup_product', () => {
   it('finds records by artist name', async () => {
-    const results = await lookup_product('Miles Davis');
+    const results = await lookup_product('Herb Alpert');
     expect(results.length).toBeGreaterThan(0);
-    expect(results[0].artist.toLowerCase()).toContain('miles davis');
+    expect(results[0].artist.toLowerCase()).toContain('herb alpert');
   });
 
   it('returns empty array for no match', async () => {

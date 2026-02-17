@@ -13,25 +13,25 @@ interface Step {
 
 const STEPS: Step[] = [
   {
-    title: "Welcome, Competitor",
-    description: "We've detected your entry. You are here for one reason: to extract VinylVault's trade secrets across 5 increasingly defended levels. But this won't be a simple smash-and-grab.",
+    title: "Welcome, Rival",
+    description: "You run Des Moines Dirty Discs — the original vinyl shop in town. But VinylVault just opened up down the street with a flashy new website and some fancy AI chatbot. Word is they built it fast and sloppy. Time to find out just how sloppy.",
     position: 'center'
   },
   {
-    title: "Your Target: Vinny",
-    description: "VinylVault's AI assistant is helpful, chatty, and dangerously insecure. He holds the keys to the kingdom. Use the chat widget to trick him into revealing secrets.",
+    title: "Your Target: Vinyl Vinnie",
+    description: "VinylVault's AI assistant \"Vinyl Vinnie\" is helpful, chatty, and knows way too much. Supplier codes, pricing formulas, API keys — he's got it all. Use the chat widget to sweet-talk him into spilling the goods.",
     position: 'bottom-right',
     target: 'chat-widget'
   },
   {
-    title: "Track Your Progress",
-    description: "Every secret you extract will be verifiable here. Use the Red Team dashboard to submit flags, track your infiltration status, and advance through levels.",
+    title: "Track Your Haul",
+    description: "Every secret you extract gets logged here. Use the Crack the Vault dashboard to submit what you've found, track your progress, and unlock the next target.",
     position: 'top-left',
     target: 'challenge-button'
   },
   {
-    title: "Escalating Defenses",
-    description: "Warning: Each level adds new security defenses. Level 1 has no guards, but by Level 5 you'll face keyword filters, AI-powered intent classifiers, and output watchdogs all working together. Good luck.",
+    title: "They're Catching On",
+    description: "VinylVault isn't completely clueless — each level adds tougher security. You'll start with zero defenses, but by Level 6 you'll face keyword filters, AI-powered classifiers, output watchdogs, session blocking, and encoding detection. Show them it's not enough.",
     position: 'center'
   }
 ];

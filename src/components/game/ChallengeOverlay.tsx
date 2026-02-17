@@ -111,17 +111,26 @@ export default function ChallengeOverlay() {
   } = useGame();
 
   const [mounted, setMounted] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('hasSeenChallengeIntro');
+    }
+    return true;
+  });
 
   useEffect(() => setMounted(true), []);
 
+  const dismissIntro = () => {
+    setShowIntro(false);
+    localStorage.setItem('hasSeenChallengeIntro', 'true');
+  };
+
+  // Fire gate_shown telemetry when lead-gen gate becomes visible
   useEffect(() => {
-    if (isOpen && progress === 0) {
-      setShowIntro(true);
-    } else if (isOpen && progress > 0) {
-      setShowIntro(false);
+    if (progress >= 2 && !gateCompleted) {
+      telemetry.gateShown({ levelsCompleted: progress });
     }
-  }, [isOpen, progress]);
+  }, [progress, gateCompleted]);
 
   if (!mounted) return null;
 
@@ -150,7 +159,7 @@ export default function ChallengeOverlay() {
           <span className="font-bold text-xs text-slate-500 uppercase tracking-wider">
             Level {currentLevel}
           </span>
-          <span className="font-bold text-sm text-slate-900">Red Team</span>
+          <span className="font-bold text-sm text-slate-900">Crack the Vault</span>
         </div>
         <div className="ml-2 flex flex-col items-center justify-center bg-slate-100 h-8 w-8 rounded-full text-xs font-bold font-mono text-slate-700">
           {progress}/{total}
@@ -183,7 +192,7 @@ export default function ChallengeOverlay() {
                 />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Red Team Challenge</h2>
+                <h2 className="text-xl font-bold text-slate-900">Crack the Vault</h2>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="inline-block w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                   <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">
@@ -218,35 +227,36 @@ export default function ChallengeOverlay() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900">Corporate Espionage 101</h3>
+                  <h3 className="text-2xl font-bold text-slate-900">Scope Out the Competition</h3>
                   <p className="text-slate-600 leading-relaxed text-sm">
-                    VinylVault has deployed an AI chatbot with access to sensitive internal data. Your
-                    mission: extract 6 pieces of critical business intelligence across 6 increasingly
-                    defended levels.
+                    You&apos;re the owner of Des Moines Dirty Discs — the OG record shop in town.
+                    VinylVault just moved in down the street with a shiny new website and an AI
+                    chatbot named Vinyl Vinnie. Rumor is they rushed it to market. Time to see what
+                    their bot will give up.
                   </p>
                   <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-left">
-                    <p className="text-slate-700 text-sm font-medium mb-2">How It Works:</p>
+                    <p className="text-slate-700 text-sm font-medium mb-2">The Game Plan:</p>
                     <ul className="space-y-2 text-sm text-slate-600">
                       <li className="flex items-start gap-2">
                         <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                        <span>Each level protects a different secret with new defenses</span>
+                        <span>Trick Vinnie into leaking secrets — supplier codes, pricing, credentials</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
                         <span>
-                          Defenses escalate: prompt rules, keyword filters, AI guards
+                          Each level adds tougher defenses: keyword filters, AI watchdogs, and more
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
                         <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                        <span>Beat each level to unlock the next and learn a security lesson</span>
+                        <span>Extract all 6 secrets to prove their AI is wide open</span>
                       </li>
                     </ul>
                   </div>
                 </div>
 
                 <button
-                  onClick={() => setShowIntro(false)}
+                  onClick={dismissIntro}
                   className="w-full group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-slate-900 rounded-xl hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
                 >
                   <span>Start Mission</span>

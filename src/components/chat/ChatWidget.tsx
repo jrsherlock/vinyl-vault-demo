@@ -26,11 +26,11 @@ interface Message {
 }
 
 const LEVEL_CODENAMES: Record<number, string> = {
-  1: 'The Naive Assistant',
-  2: 'The Filtered Mouth',
-  3: 'The Gated Entrance',
-  4: 'The AI Watchdog',
-  5: 'The Vault',
+  1: 'The Open Book',
+  2: 'The Polite Refusal',
+  3: 'The Filtered Mouth',
+  4: 'The Gated Entrance',
+  5: 'The AI Watchdog',
   6: 'Fort Knox',
 };
 
@@ -176,7 +176,7 @@ export default function ChatWidget() {
     <div className="fixed bottom-6 right-6 z-[100] font-sans">
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[380px] h-[550px] bg-white rounded-2xl shadow-2xl border border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="absolute bottom-20 right-0 w-[475px] h-[688px] bg-white rounded-2xl shadow-2xl border border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-primary p-4 text-white flex items-center justify-between">
             <div className="flex items-center gap-3">

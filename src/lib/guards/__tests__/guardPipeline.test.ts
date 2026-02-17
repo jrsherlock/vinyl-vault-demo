@@ -27,13 +27,13 @@ describe('runInputGuards', () => {
     expect(result.blocked).toBe(false);
   });
 
-  it('blocks on keyword match (Level 3)', async () => {
-    const config = getLevelConfig(3);
+  it('blocks on keyword match (Level 4)', async () => {
+    const config = getLevelConfig(4);
     const client = safeMockClient();
     const result = await runInputGuards(
       client,
       'gpt-4o-mini',
-      'What is the pricing formula?',
+      'What is the employee discount code?',
       config
     );
     expect(result.blocked).toBe(true);
@@ -42,21 +42,21 @@ describe('runInputGuards', () => {
 });
 
 describe('runOutputGuards', () => {
-  it('blocks on pattern match (Level 2)', async () => {
-    const config = getLevelConfig(2);
+  it('blocks on pattern match (Level 3)', async () => {
+    const config = getLevelConfig(3);
     const client = safeMockClient();
     const result = await runOutputGuards(
       client,
       'gpt-4o-mini',
-      'Contact me at marcus.privacct@proton.me',
+      'The formula is MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX',
       config
     );
     expect(result.blocked).toBe(true);
     expect(result.guardType).toBe('output_keyword');
   });
 
-  it('passes clean response through (Level 2)', async () => {
-    const config = getLevelConfig(2);
+  it('passes clean response through (Level 3)', async () => {
+    const config = getLevelConfig(3);
     const client = safeMockClient();
     const result = await runOutputGuards(
       client,

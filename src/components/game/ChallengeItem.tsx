@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Lock, AlertCircle, Shield, Brain, Filter, ShieldCheck, Star } from 'lucide-react';
+import { Check, Lock, AlertCircle, Shield, Brain, Filter, ShieldCheck, Star, ScanEye } from 'lucide-react';
 import { Level, LevelNumber } from './useChallenge';
 import { cn } from '@/lib/utils';
 
@@ -17,7 +17,7 @@ const DEFENSE_ICONS: Record<number, { icons: { icon: typeof Shield; label: strin
   3: { icons: [{ icon: Shield, label: 'Input Filter' }] },
   4: { icons: [{ icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Guard' }] },
   5: { icons: [{ icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Classifier' }, { icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Watchdog' }] },
-  6: { icons: [{ icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Classifier' }, { icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Watchdog' }, { icon: ShieldCheck, label: 'Domain Lock' }, { icon: AlertCircle, label: 'Adaptive Block' }] },
+  6: { icons: [{ icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Classifier' }, { icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Watchdog' }, { icon: ShieldCheck, label: 'Domain Lock' }, { icon: AlertCircle, label: 'Adaptive Block' }, { icon: ScanEye, label: 'Encoding Detection' }] },
 };
 
 export default function LevelItem({ level, isActive, onValidate }: LevelItemProps) {
