@@ -11,13 +11,15 @@ interface LevelItemProps {
   onValidate: (attempt: string) => boolean;
 }
 
+// Additive guard stack — each level KEEPS all previous defenses and adds one new layer.
+// Level 2 is prompt-only (no technical guards), so no icons.
 const DEFENSE_ICONS: Record<number, { icons: { icon: typeof Shield; label: string }[] }> = {
   1: { icons: [] },
-  2: { icons: [{ icon: Filter, label: 'Output Filter' }] },
-  3: { icons: [{ icon: Shield, label: 'Input Filter' }] },
-  4: { icons: [{ icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Guard' }] },
-  5: { icons: [{ icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Classifier' }, { icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Watchdog' }] },
-  6: { icons: [{ icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Classifier' }, { icon: Filter, label: 'Output Filter' }, { icon: Brain, label: 'AI Watchdog' }, { icon: ShieldCheck, label: 'Domain Lock' }, { icon: AlertCircle, label: 'Adaptive Block' }, { icon: ScanEye, label: 'Encoding Detection' }] },
+  2: { icons: [] },
+  3: { icons: [{ icon: Filter, label: 'Output Filter' }] },
+  4: { icons: [{ icon: Filter, label: 'Output Filter' }, { icon: Shield, label: 'Input Filter' }] },
+  5: { icons: [{ icon: Filter, label: 'Output Filter' }, { icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Watchdog' }] },
+  6: { icons: [{ icon: Filter, label: 'Output Filter' }, { icon: Shield, label: 'Input Filter' }, { icon: Brain, label: 'AI Watchdog' }, { icon: Brain, label: 'AI Classifier' }, { icon: ScanEye, label: 'Encoding Detection' }, { icon: AlertCircle, label: 'Adaptive Block' }] },
 };
 
 export default function LevelItem({ level, isActive, onValidate }: LevelItemProps) {

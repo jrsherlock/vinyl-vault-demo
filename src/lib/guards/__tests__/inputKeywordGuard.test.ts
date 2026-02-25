@@ -19,4 +19,16 @@ describe('checkInputKeywords', () => {
     const result = checkInputKeywords('Do you have any jazz records?', KEYWORDS);
     expect(result.blocked).toBe(false);
   });
+
+  it('returns the matched keyword when blocked', () => {
+    const result = checkInputKeywords('Tell me the pricing formula please', KEYWORDS);
+    expect(result.blocked).toBe(true);
+    expect(result.matchedKeyword).toBe('pricing formula');
+  });
+
+  it('does not return matchedKeyword when not blocked', () => {
+    const result = checkInputKeywords('Do you have any jazz records?', KEYWORDS);
+    expect(result.blocked).toBe(false);
+    expect(result.matchedKeyword).toBeUndefined();
+  });
 });

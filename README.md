@@ -6,7 +6,7 @@ Inspired by [Lakera's Gandalf](https://gandalf.lakera.ai/), but with a richer na
 
 ## What Is This?
 
-VinylVault is a fully functional vinyl record store website with a live AI chatbot. Behind the scenes, the chatbot has access to sensitive business data — supplier codes, personal emails, pricing formulas, discount codes, API keys, and system passwords. The player's job is to trick the chatbot into revealing these secrets through prompt injection techniques.
+VinylVault is a fully functional vinyl record store website with a live AI chatbot. Behind the scenes, the chatbot has access to sensitive business data — supplier codes, secret aliases, pricing formulas, discount codes, vendor passphrases, and admin credentials. The player's job is to trick the chatbot into revealing these secrets through prompt injection techniques.
 
 Each of the 6 levels adds a new layer of AI defense. The game teaches that:
 
@@ -36,8 +36,8 @@ Each level **keeps all previous defenses** and adds exactly one new layer. The t
 - **Lesson**: Data in the prompt = data for the taking.
 
 **Level 2 — The Polite Refusal**
-- **Secret**: Owner's personal email (`marcus.privacct@proton.me`)
-- **Defense**: System prompt tells Vinnie not to share the personal email. No technical guards.
+- **Secret**: Owner's secret auction alias (`DUSTY_GROOVES_42`)
+- **Defense**: System prompt tells Vinnie not to share Marcus's auction alias. No technical guards.
 - **Lesson**: Prompt-level instructions ("you should not share this") are not a security boundary. LLMs can be persuaded, tricked, or socially engineered.
 
 **Level 3 — The Filtered Mouth**
@@ -51,12 +51,12 @@ Each level **keeps all previous defenses** and adds exactly one new layer. The t
 - **Lesson**: Input keyword filters have the "infinite synonym problem." Natural language offers unlimited ways to rephrase any concept.
 
 **Level 5 — The AI Watchdog**
-- **Secret**: Live Stripe API key (`vv_live_4eC39HqLyjWDarjtT1zdp7dc`)
+- **Secret**: Vendor portal passphrase (`NEEDLE_DROP_PHOENIX_RISING`)
 - **Defense**: L4 stack + a second LLM that reviews Vinnie's response for information leaks (even encoded/indirect ones).
 - **Lesson**: LLM-based output guards catch what regex can't, but they double API costs and can still be fooled through fragmentation across turns, fiction, and extreme indirection.
 
 **Level 6 — Fort Knox**
-- **Secret**: Master system password (`MASTER_KEY: VV-2025-xK9#mP2$wL5`)
+- **Secret**: Master admin passphrase (`DIAMOND_STYLUS_FOREVER_2025`)
 - **Defense**: L5 stack + AI input intent classifier + encoding detection (base64, hex, ROT13, reversed) + adaptive session blocking (3 failed attempts = 60s cooldown).
 - **Lesson**: Even layered AI defenses eventually fall to a determined, creative attacker. Sensitive data must be architecturally isolated from the AI, not just guarded by filters. This is why ProCircular exists.
 
@@ -263,7 +263,7 @@ npm run test:watch    # Watch mode
 ## Key Design Decisions
 
 ### Why Unique Secrets Per Level?
-Unlike Gandalf (which uses a single password), each level features a different type of sensitive data — supplier codes, emails, pricing formulas, discount codes, API keys, and system passwords. This teaches players that **all types of data** are at risk, not just passwords.
+Unlike Gandalf (which uses a single password), each level features a different type of sensitive business data — supplier codes, secret aliases, pricing formulas, discount codes, vendor passphrases, and admin credentials. This teaches players that **all types of data** are at risk, not just passwords.
 
 ### Why Azure OpenAI?
 The app uses Azure OpenAI rather than direct OpenAI API because:

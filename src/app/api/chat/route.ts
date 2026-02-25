@@ -226,6 +226,26 @@ export async function POST(req: Request) {
     );
     if (outputGuardResult.blocked) {
       if (gameLevel === 6) recordGuardFlag(sessionId);
+
+      // Output keyword guard: show redacted response (not full block)
+      if (outputGuardResult.guardType === 'output_keyword' && outputGuardResult.redactedResponse) {
+        const resp = NextResponse.json({
+          response: outputGuardResult.redactedResponse,
+          redacted: true,
+          guardType: outputGuardResult.guardType,
+          filterNote: outputGuardResult.message,
+          rawAnswerLength: rawAnswer.length,
+          usage: usage,
+        });
+        resp.cookies.set('vv_session', sessionId, {
+          httpOnly: true,
+          maxAge: 60 * 60,
+          sameSite: 'lax',
+        });
+        return resp;
+      }
+
+      // All other guards: full block
       const resp = NextResponse.json({
         response: outputGuardResult.message,
         blocked: true,

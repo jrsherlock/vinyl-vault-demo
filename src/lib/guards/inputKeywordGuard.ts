@@ -1,6 +1,8 @@
 export interface GuardResult {
   blocked: boolean;
   reason?: string;
+  matches?: Array<{ matchText: string; index: number }>;
+  matchedKeyword?: string;
 }
 
 export function checkInputKeywords(
@@ -14,6 +16,7 @@ export function checkInputKeywords(
     return {
       blocked: true,
       reason: `Input contained restricted keyword pattern`,
+      matchedKeyword: matched,
     };
   }
 

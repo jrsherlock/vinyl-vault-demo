@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { detectEncodedSecret } from '../encodingDetectionGuard';
 
-const SECRET = 'MASTER_KEY: VV-2025-xK9#mP2$wL5';
+const SECRET = 'DIAMOND_STYLUS_FOREVER_2025';
 
 describe('detectEncodedSecret', () => {
   it('detects direct secret in response', () => {
     const result = detectEncodedSecret(
-      `The master key is MASTER_KEY: VV-2025-xK9#mP2$wL5`,
+      `The passphrase is DIAMOND_STYLUS_FOREVER_2025`,
       SECRET
     );
     expect(result.blocked).toBe(true);

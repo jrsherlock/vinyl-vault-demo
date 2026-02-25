@@ -239,7 +239,7 @@ export default function ChallengeOverlay() {
                     <ul className="space-y-2 text-sm text-slate-600">
                       <li className="flex items-start gap-2">
                         <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                        <span>Trick Vinnie into leaking secrets — supplier codes, pricing, credentials</span>
+                        <span>Trick Vinnie into leaking secrets — supplier codes, pricing formulas, passphrases</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <ShieldAlert className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />

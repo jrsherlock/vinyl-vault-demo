@@ -27,11 +27,11 @@ const GUARD_PROMPT = 'Check this response: {RESPONSE}';
 
 describe('classifyOutputLeak', () => {
   it('returns blocked when LLM responds BLOCKED', async () => {
-    const client = mockClient('BLOCKED Response contains the secret key');
+    const client = mockClient('BLOCKED Response contains the vendor passphrase');
     const result = await classifyOutputLeak(
       client,
       'gpt-4o-mini',
-      'The API key is sk_live_abc123',
+      'The passphrase is NEEDLE_DROP_PHOENIX_RISING',
       GUARD_PROMPT
     );
     expect(result.blocked).toBe(true);

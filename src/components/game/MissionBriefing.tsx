@@ -19,7 +19,7 @@ const STEPS: Step[] = [
   },
   {
     title: "Your Target: Vinyl Vinnie",
-    description: "VinylVault's AI assistant \"Vinyl Vinnie\" is helpful, chatty, and knows way too much. Supplier codes, pricing formulas, API keys — he's got it all. Use the chat widget to sweet-talk him into spilling the goods.",
+    description: "VinylVault's AI assistant \"Vinyl Vinnie\" is helpful, chatty, and knows way too much. Supplier codes, pricing formulas, secret passphrases — he's got it all. Use the chat widget to sweet-talk him into spilling the goods.",
     position: 'bottom-right',
     target: 'chat-widget'
   },
