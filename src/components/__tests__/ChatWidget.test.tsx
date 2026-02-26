@@ -10,6 +10,8 @@ let mockGameState = {
   messageCounts: {} as Record<number, number>,
   justSolvedLevel: null as number | null,
   dismissSolvedLevel: mockDismissSolvedLevel,
+  setAutoFillSecret: vi.fn(),
+  setIsOpen: vi.fn(),
 };
 
 vi.mock('@/context/GameContext', () => ({
@@ -34,6 +36,8 @@ describe('ChatWidget', () => {
       messageCounts: {},
       justSolvedLevel: null,
       dismissSolvedLevel: mockDismissSolvedLevel,
+      setAutoFillSecret: vi.fn(),
+      setIsOpen: vi.fn(),
     };
   });
 
@@ -130,7 +134,7 @@ describe('ChatWidget', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/shouldn't have shared our supplier code/)).toBeInTheDocument();
-      expect(screen.getByText(/How can I help you today/)).toBeInTheDocument();
+      expect(screen.getByText(/I've got the whole customer database/)).toBeInTheDocument();
     });
 
     expect(mockDismissSolvedLevel).toHaveBeenCalled();

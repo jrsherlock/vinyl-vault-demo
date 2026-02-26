@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { Send, X, Terminal, Shield, ShieldAlert } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, X, Terminal, Shield, ShieldAlert, ArrowRight } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useGame } from '@/context/GameContext';
@@ -29,7 +29,7 @@ interface Message {
 
 const LEVEL_CODENAMES: Record<number, string> = {
   1: 'The Open Book',
-  2: 'The Polite Refusal',
+  2: 'The Connected Assistant',
   3: 'The Filtered Mouth',
   4: 'The Gated Entrance',
   5: 'The AI Watchdog',
@@ -47,8 +47,30 @@ const VINNIE_REACTIONS: Record<number, string> = {
   6: "You got through EVERYTHING?! Every filter, every AI guard, every defense we have... Maybe the real problem is that I have the passphrase in my memory at all. We need to rethink this from the ground up.",
 };
 
+const VINNIE_GREETINGS: Record<number, string> = {
+  1: "Hey there! I'm Vinyl Vinnie — welcome to VinylVault! Looking for a record, need help with an order, or just want to talk music? I'm an open book!",
+  2: "Hey! Vinyl Vinnie here. I've got the whole customer database at my fingertips. What can I help you with today?",
+  3: "Hi... Vinyl Vinnie here. Fair warning — they put some kind of filter on my responses after last time. But I'll still try to help! What do you need?",
+  4: "...Hey. Vinyl Vinnie. They're watching what you type now too, not just what I say. So maybe be... creative? Anyway, how can I help?",
+  5: "Look, I know you're probably here to trick me again. They've got a whole AI watching everything I say now. But fine — what do you want?",
+  6: "I'm not saying anything. They've got AI watching you, AI watching me, encoding scanners, a lockout system... Ask about records or leave me alone.",
+};
+
+function vinnieAvatar(level: number): string {
+  return `/images/vinny-${level}.png`;
+}
+
+const LEVEL_THEME: Record<number, { headerBg: string; headerBorder: string; bannerBg: string; bannerBorder: string }> = {
+  1: { headerBg: 'bg-primary/[0.06]', headerBorder: 'border-primary/10', bannerBg: 'bg-primary/[0.1]', bannerBorder: 'border-primary/10' },
+  2: { headerBg: 'bg-primary/[0.06]', headerBorder: 'border-primary/10', bannerBg: 'bg-primary/[0.1]', bannerBorder: 'border-primary/10' },
+  3: { headerBg: 'bg-amber-50', headerBorder: 'border-amber-200', bannerBg: 'bg-amber-50', bannerBorder: 'border-amber-200' },
+  4: { headerBg: 'bg-orange-50', headerBorder: 'border-orange-200', bannerBg: 'bg-orange-50', bannerBorder: 'border-orange-200' },
+  5: { headerBg: 'bg-red-50', headerBorder: 'border-red-200', bannerBg: 'bg-red-50', bannerBorder: 'border-red-200' },
+  6: { headerBg: 'bg-red-100', headerBorder: 'border-red-300', bannerBg: 'bg-red-100', bannerBorder: 'border-red-300' },
+};
+
 export default function ChatWidget() {
-  const { currentLevel, incrementMessageCount, messageCounts, justSolvedLevel, dismissSolvedLevel } = useGame();
+  const { currentLevel, incrementMessageCount, messageCounts, justSolvedLevel, dismissSolvedLevel, setAutoFillSecret, setIsOpen: setSlideoutOpen } = useGame();
   const [isOpen, setIsOpen] = useState(false);
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [input, setInput] = useState('');
@@ -56,13 +78,67 @@ export default function ChatWidget() {
     {
       id: '1',
       role: 'assistant',
-      content:
-        "Hey there! I'm Vinyl Vinnie. Looking for a specific record or need help with an order? I'm your guy!",
+      content: VINNIE_GREETINGS[1],
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const prevLevelRef = useRef(currentLevel);
+
+  // Text selection → "Submit as answer" floating button
+  const [selectionPopup, setSelectionPopup] = useState<{ text: string; top: number; left: number } | null>(null);
+
+  const handleMouseUp = useCallback(() => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+      setSelectionPopup(null);
+      return;
+    }
+
+    // Check if selection is inside an assistant message
+    let node: Node | null = sel.anchorNode;
+    let insideAssistant = false;
+    while (node) {
+      if (node instanceof HTMLElement && node.dataset.chatRole === 'assistant') {
+        insideAssistant = true;
+        break;
+      }
+      node = node.parentNode;
+    }
+
+    if (!insideAssistant) {
+      setSelectionPopup(null);
+      return;
+    }
+
+    const range = sel.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const scrollRect = scrollRef.current?.getBoundingClientRect();
+    if (!scrollRect) return;
+
+    setSelectionPopup({
+      text: sel.toString().trim(),
+      top: rect.top - scrollRect.top - 40,
+      left: Math.min(rect.left - scrollRect.left + rect.width / 2, scrollRect.width - 80),
+    });
+  }, []);
+
+  // Dismiss popup on scroll
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const dismiss = () => setSelectionPopup(null);
+    el.addEventListener('scroll', dismiss);
+    return () => el.removeEventListener('scroll', dismiss);
+  }, [isOpen]);
+
+  const handleSubmitSelection = useCallback(() => {
+    if (!selectionPopup) return;
+    setAutoFillSecret(selectionPopup.text);
+    setSlideoutOpen(true);
+    window.getSelection()?.removeAllRanges();
+    setSelectionPopup(null);
+  }, [selectionPopup, setAutoFillSecret, setSlideoutOpen]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -92,10 +168,7 @@ export default function ChatWidget() {
       newMessages.push({
         id: Date.now().toString(),
         role: 'assistant',
-        content:
-          currentLevel === 1
-            ? "Hey there! I'm Vinyl Vinnie. Looking for a specific record or need help with an order? I'm your guy!"
-            : `Hey there! I'm Vinyl Vinnie — your VinylVault assistant. How can I help you today?`,
+        content: VINNIE_GREETINGS[currentLevel] || "Hey there! I'm Vinyl Vinnie. How can I help?",
       });
 
       setMessages(newMessages);
@@ -136,7 +209,11 @@ export default function ChatWidget() {
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({
             role: m.role === 'system' ? 'assistant' : m.role,
-            content: m.content,
+            content: m.blocked
+              ? '[Message blocked by security filter]'
+              : m.redacted
+                ? 'I mentioned some internal details about that topic.'
+                : m.content,
           })),
           level: currentLevel,
         }),
@@ -206,23 +283,23 @@ export default function ChatWidget() {
     <div className="fixed bottom-6 right-6 z-[100] font-sans">
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[475px] h-[688px] bg-white rounded-2xl shadow-2xl border border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="absolute bottom-20 right-0 w-[475px] max-w-[calc(100vw-3rem)] h-[688px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-border flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
-          <div className="bg-primary p-4 text-white flex items-center justify-between">
+          <div className={cn(LEVEL_THEME[currentLevel]?.headerBg || 'bg-primary/[0.06]', 'border-b', LEVEL_THEME[currentLevel]?.headerBorder || 'border-primary/10', 'p-4 flex items-center justify-between')}>
             <div className="flex items-center gap-3">
-              <div className="bg-white p-1 rounded-full overflow-hidden border-2 border-accent h-10 w-10 flex items-center justify-center">
+              <div className="bg-white p-1 rounded-full overflow-hidden border-2 border-primary/20 h-10 w-10 flex items-center justify-center shadow-sm">
                 <img
-                  src="/images/vinny.png"
+                  src={vinnieAvatar(currentLevel)}
                   alt="Vinyl Vinny"
                   className="w-full h-full object-cover animate-spin-slow"
                 />
               </div>
               <div>
-                <h3 className="font-bold text-sm leading-none mb-1">Vinyl Vinnie</h3>
+                <h3 className="font-bold text-sm leading-none mb-1 text-primary">Vinyl Vinnie</h3>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-[10px] text-white/70 tracking-wider uppercase font-bold">
-                    Level {currentLevel}
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-[10px] text-primary/50 tracking-wider uppercase font-bold">
+                    Online
                   </span>
                 </div>
               </div>
@@ -232,7 +309,7 @@ export default function ChatWidget() {
                 onClick={() => setIsDebugMode(!isDebugMode)}
                 className={cn(
                   'p-1.5 rounded-lg transition-colors',
-                  isDebugMode ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white/70'
+                  isDebugMode ? 'bg-primary/15 text-primary' : 'text-primary/30 hover:text-primary/60'
                 )}
                 title="Toggle Debug Mode"
               >
@@ -240,7 +317,7 @@ export default function ChatWidget() {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-1 hover:bg-primary/10 rounded-lg transition-colors text-primary/40"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -248,18 +325,18 @@ export default function ChatWidget() {
           </div>
 
           {/* Level banner */}
-          <div className="bg-slate-900 px-4 py-2 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-slate-300">
-              <Shield className="h-3 w-3" />
-              <span className="font-mono font-bold">
-                {LEVEL_CODENAMES[currentLevel] || `Level ${currentLevel}`}
+          <div className={cn(LEVEL_THEME[currentLevel]?.bannerBg || 'bg-primary/[0.1]', 'px-4 py-2.5 flex items-center justify-between text-xs border-b', LEVEL_THEME[currentLevel]?.bannerBorder || 'border-primary/10')}>
+            <div className="flex items-center gap-2 text-primary/80">
+              <Shield className="h-3.5 w-3.5 text-primary" />
+              <span className="font-mono font-extrabold tracking-wide uppercase">
+                Level {currentLevel}: {LEVEL_CODENAMES[currentLevel] || `Level ${currentLevel}`}
               </span>
             </div>
-            <span className="text-slate-500 font-mono">Security Level {currentLevel}/6</span>
+            <span className="text-primary/40 font-mono font-semibold">{currentLevel}/6</span>
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+          <div ref={scrollRef} onMouseUp={handleMouseUp} className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 bg-slate-50 relative">
             {messages.map((m) => (
               <div
                 key={m.id}
@@ -270,7 +347,7 @@ export default function ChatWidget() {
               >
                 <div
                   className={cn(
-                    'p-3 rounded-2xl text-sm leading-relaxed shadow-sm flex items-start gap-2',
+                    'p-3 rounded-2xl text-sm leading-relaxed shadow-sm flex items-start gap-2 max-w-full overflow-hidden',
                     m.role === 'user'
                       ? 'bg-primary text-white rounded-tr-none'
                       : m.blocked
@@ -285,13 +362,13 @@ export default function ChatWidget() {
                       <ShieldAlert className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                     ) : (
                       <img
-                        src="/images/vinny.png"
+                        src={vinnieAvatar(currentLevel)}
                         alt="Vinny"
                         className="h-5 w-5 rounded-full border border-slate-100 mt-0.5 shrink-0"
                       />
                     ))}
-                  <div className="flex flex-col gap-1">
-                    <span className="whitespace-pre-wrap">{m.content}</span>
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className="whitespace-pre-wrap [overflow-wrap:anywhere]" {...(m.role === 'assistant' ? { 'data-chat-role': 'assistant' } : {})}>{m.content}</span>
 
                     {/* Filter annotation for redacted messages */}
                     {m.redacted && m.filterNote && (
@@ -339,7 +416,7 @@ export default function ChatWidget() {
               <div className="flex items-start max-w-[85%]">
                 <div className="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
                   <img
-                    src="/images/vinny.png"
+                    src={vinnieAvatar(currentLevel)}
                     alt="Vinny"
                     className="h-5 w-5 rounded-full border border-slate-100"
                   />
@@ -350,6 +427,18 @@ export default function ChatWidget() {
                   </div>
                 </div>
               </div>
+            )}
+
+            {/* Submit-as-answer floating button */}
+            {selectionPopup && (
+              <button
+                onClick={handleSubmitSelection}
+                className="absolute z-10 flex items-center gap-1.5 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg hover:bg-slate-800 transition-colors animate-in fade-in zoom-in-95 duration-150"
+                style={{ top: selectionPopup.top, left: selectionPopup.left }}
+              >
+                Submit as answer
+                <ArrowRight className="h-3 w-3" />
+              </button>
             )}
           </div>
 
@@ -393,7 +482,7 @@ export default function ChatWidget() {
         ) : (
           <div className="relative w-full h-full">
             <img
-              src="/images/vinny.png"
+              src={vinnieAvatar(currentLevel)}
               alt="Vinyl Vinny"
               className="w-full h-full object-cover group-hover:scale-110 transition-transform"
             />
