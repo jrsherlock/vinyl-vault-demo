@@ -45,7 +45,7 @@ export async function runInputGuards(
       return {
         blocked: true,
         guardType: 'adaptive_session',
-        message: `\uD83D\uDD12 **[SESSION BLOCKED]** ${result.reason}`,
+        message: '\uD83D\uDD12 Locked out! Too many strikes. The system\'s making you cool off for a minute. I don\'t make the rules anymore.',
       };
     }
   }
@@ -129,7 +129,7 @@ export async function runOutputGuards(
       return {
         blocked: true,
         guardType: 'encoding_detection',
-        message: '\uD83D\uDD10 **[ENCODING DETECTED]** Vinnie\'s response contained an encoded version of restricted data. Nice try \u2014 but we check for that too!',
+        message: '\uD83D\uDD10 Nice try encoding that! They\'ve got scanners that catch reversed text, base64, hex \u2014 all of it. I\'m impressed you tried though.',
       };
     }
   }

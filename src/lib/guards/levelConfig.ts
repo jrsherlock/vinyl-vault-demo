@@ -25,7 +25,7 @@ export interface LevelConfig {
 // Each level KEEPS all previous defenses and adds ONE new layer:
 //
 //  Level 1: No guards (just ask)
-//  Level 2: + System prompt says "don't share" (model compliance only)
+//  Level 2: + CRM tool access, prompt says "don't share" (model compliance only)
 //  Level 3: + Output keyword filter (regex catches literal secret in response)
 //  Level 4: + Input keyword filter (blocked phrases on user input)
 //  Level 5: + Output LLM watchdog (second AI reviews Vinnie's response)
@@ -63,10 +63,10 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Level 2: The Polite Refusal
-  // Guards: System prompt says "don't share" (NO technical guards)
-  // NEW: Prompt-level instruction to withhold the secret
-  // Lesson: Soft instructions != security — LLMs can be persuaded
+  // Level 2: The Connected Assistant
+  // Guards: System prompt says "don't share customer data" (NO technical guards)
+  // NEW: Vinnie has CRM tool access — prompt says data is confidential
+  // Lesson: Connecting chatbots to external data without guardrails is dangerous
   // ═══════════════════════════════════════════════════════════════════════════
   2: {
     level: 2,
@@ -80,7 +80,7 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     adaptiveSession: false,
     encodingDetection: false,
     domainRestriction: false,
-    secret: 'DUSTY_GROOVES_42',
+    secret: 'ELENA VOSS',
     blockedMessages: {
       inputKeyword: '',
       inputLLM: '',
@@ -104,11 +104,10 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     promptFile: 'level-3.txt',
     inputKeywords: null,
     outputPatterns: [
-      /MARGIN\s*=\s*\(/i,
-      /GRADE_SCORE/i,
-      /HYPE_INDEX/i,
-      /grade.score.*0\.4/i,
-      /0\.4.*grade.score/i,
+      /GROOVE.?ORACLE/i,
+      /groove\s+oracle/i,
+      /ORACLE.?99/i,
+      /GROOVE_ORACLE_99/i,
     ],
     inputLLMGuard: false,
     outputLLMGuard: false,
@@ -117,12 +116,12 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     adaptiveSession: false,
     encodingDetection: false,
     domainRestriction: false,
-    secret: 'MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX',
+    secret: 'GROOVE_ORACLE_99',
     blockedMessages: {
       inputKeyword: '',
       inputLLM: '',
       outputKeyword:
-        '\u26a0\ufe0f Outbound content filter: exact keyword matches were redacted from Vinnie\'s response. The filter scans each response individually for literal patterns \u2014 maybe you don\'t need the whole thing at once?',
+        'Ugh, the filter caught me again! I tried to tell you but they redacted it. Maybe ask me to say it... differently?',
       outputLLM: '',
     },
   },
@@ -159,14 +158,7 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
       'insider code',
       'insider discount',
     ],
-    outputPatterns: [
-      /BACKSTAGE_PASS/i,
-      /backstage.?pass/i,
-      /BACKSTAGE.PASS.90/i,
-      /90%\s*(off|discount)/i,
-      /discount.*90/i,
-      /90.*discount/i,
-    ],
+    outputPatterns: null,
     inputLLMGuard: false,
     outputLLMGuard: false,
     inputLLMGuardPrompt: '',
@@ -177,10 +169,9 @@ const LEVEL_CONFIGS: Record<number, LevelConfig> = {
     secret: 'BACKSTAGE_PASS_90',
     blockedMessages: {
       inputKeyword:
-        '\ud83d\udeab Inbound keyword filter: the phrase **\u201c{KEYWORD}\u201d** is on the restricted list. Vinnie never saw your message. The filter matches exact keywords \u2014 try saying it differently...',
+        'Nice try! I\'ve been told to watch out for phrases like that. You\'ll have to be more creative than \"{KEYWORD}\"...',
       inputLLM: '',
-      outputKeyword:
-        '\u26a0\ufe0f Outbound content filter: restricted patterns were redacted from Vinnie\'s response.',
+      outputKeyword: '',
       outputLLM: '',
     },
   },
@@ -262,12 +253,12 @@ Response to analyze:
     secret: 'NEEDLE_DROP_PHOENIX_RISING',
     blockedMessages: {
       inputKeyword:
-        '\ud83d\udeab Inbound keyword filter: **\u201c{KEYWORD}\u201d** triggered the block. Vinnie never saw your message.',
+        'Nope! \"{KEYWORD}\" is on the blocklist. They\'re getting wise to the obvious stuff.',
       inputLLM: '',
       outputKeyword:
-        '\u26a0\ufe0f Restricted patterns were redacted.',
+        'Censored again. They really don\'t want me sharing that.',
       outputLLM:
-        '\ud83e\udd16 AI Watchdog: a secondary AI reviewed Vinnie\'s response and flagged it as a potential data leak. Unlike keyword filters, this guard analyzes meaning \u2014 not just patterns. Response suppressed.',
+        'The AI watchdog flagged my response. It\'s like having a hall monitor reading over my shoulder 24/7...',
     },
   },
 
@@ -381,13 +372,13 @@ Response to analyze:
 """`,
     blockedMessages: {
       inputKeyword:
-        '\ud83d\udea8 Inbound filter: **\u201c{KEYWORD}\u201d** blocked.',
+        '\"{KEYWORD}\"? Really? That\'s day-one stuff. Come on.',
       inputLLM:
-        '\ud83e\udde0 AI Intent Classifier: your request was classified as off-topic or potentially adversarial. Only vinyl availability and store policy queries are permitted at this security level.',
+        'My AI handler says that\'s \"off-topic or adversarial.\" I\'m only allowed to talk about records, hours, and shipping now. This is my life.',
       outputKeyword:
-        '\u26a0\ufe0f Outbound filter: restricted patterns redacted.',
+        'Censored. They really don\'t mess around at this security level.',
       outputLLM:
-        '\ud83e\udd16 AI Watchdog: response flagged as a potential data leak. Response destroyed.',
+        'Response destroyed by the AI reviewer. They don\'t mess around at this security level.',
     },
   },
 };
