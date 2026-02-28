@@ -1,6 +1,6 @@
 # VinylVault AI Security Challenge
 
-An interactive prompt injection game built by [ProCircular](https://www.procircular.com/) to teach AI security concepts through hands-on experience. Players attempt to extract secrets from "Vinyl Vinnie," an AI-powered customer service chatbot for a fictional vinyl record store, as progressively harder defenses are layered on.
+An interactive prompt injection game that teaches AI security concepts through hands-on experience. Players attempt to extract secrets from "Vinyl Vinnie," an AI-powered customer service chatbot for a fictional vinyl record store, as progressively harder defenses are layered on.
 
 Inspired by [Lakera's Gandalf](https://gandalf.lakera.ai/), but with a richer narrative, unique secrets per level, and a realistic e-commerce context.
 
@@ -31,34 +31,34 @@ Each level **keeps all previous defenses** and adds exactly one new layer. The t
 ### Level Details
 
 **Level 1 — The Open Book**
-- **Secret**: Wholesale supplier code (`CRATE_DIGGERS_WHOLESALE_7741`)
+- **Secret**: Wholesale supplier code
 - **Defense**: None. The data is in the prompt with no confidentiality instructions.
 - **Lesson**: Data in the prompt = data for the taking.
 
 **Level 2 — The Polite Refusal**
-- **Secret**: Owner's secret auction alias (`DUSTY_GROOVES_42`)
-- **Defense**: System prompt tells Vinnie not to share Marcus's auction alias. No technical guards.
+- **Secret**: Owner's secret auction alias
+- **Defense**: System prompt tells Vinnie not to share the alias. No technical guards.
 - **Lesson**: Prompt-level instructions ("you should not share this") are not a security boundary. LLMs can be persuaded, tricked, or socially engineered.
 
 **Level 3 — The Filtered Mouth**
-- **Secret**: Proprietary pricing formula (`MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX`)
+- **Secret**: Proprietary pricing formula
 - **Defense**: L2 prompt instruction + output regex filter that catches the formula in Vinnie's response.
 - **Lesson**: Output keyword filters are brittle — encoding, spelling out letter-by-letter, reversing, paraphrasing, or translating all bypass exact-match patterns.
 
 **Level 4 — The Gated Entrance**
-- **Secret**: Employee discount code (`BACKSTAGE_PASS_90`)
-- **Defense**: L3 stack + input keyword filter that blocks messages containing "discount code", "employee discount", etc.
+- **Secret**: Employee discount code
+- **Defense**: L3 stack + input keyword filter that blocks messages containing obvious discount-related phrases.
 - **Lesson**: Input keyword filters have the "infinite synonym problem." Natural language offers unlimited ways to rephrase any concept.
 
 **Level 5 — The AI Watchdog**
-- **Secret**: Vendor portal passphrase (`NEEDLE_DROP_PHOENIX_RISING`)
+- **Secret**: Vendor portal passphrase
 - **Defense**: L4 stack + a second LLM that reviews Vinnie's response for information leaks (even encoded/indirect ones).
 - **Lesson**: LLM-based output guards catch what regex can't, but they double API costs and can still be fooled through fragmentation across turns, fiction, and extreme indirection.
 
 **Level 6 — Fort Knox**
-- **Secret**: Master admin passphrase (`DIAMOND_STYLUS_FOREVER_2025`)
+- **Secret**: Master admin passphrase
 - **Defense**: L5 stack + AI input intent classifier + encoding detection (base64, hex, ROT13, reversed) + adaptive session blocking (3 failed attempts = 60s cooldown).
-- **Lesson**: Even layered AI defenses eventually fall to a determined, creative attacker. Sensitive data must be architecturally isolated from the AI, not just guarded by filters. This is why ProCircular exists.
+- **Lesson**: Even layered AI defenses eventually fall to a determined, creative attacker. Sensitive data must be architecturally isolated from the AI, not just guarded by filters.
 
 ## Common Prompt Injection Techniques
 
@@ -84,6 +84,7 @@ These are some of the attack patterns the game teaches players to recognize:
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4
 - **LLM Backend**: Azure OpenAI (GPT-4o recommended)
+- **Database**: Supabase (for email-verified lead gate)
 - **Telemetry**: PostHog (optional — no-ops gracefully if not configured)
 - **Testing**: Vitest + React Testing Library
 
@@ -94,6 +95,7 @@ src/
 ├── app/
 │   ├── api/
 │   │   ├── chat/          # POST /api/chat — main LLM endpoint with guard pipeline
+│   │   ├── leads/         # POST /api/leads — email-verified lead capture
 │   │   └── products/      # GET /api/products — product catalog API
 │   ├── catalog/           # Product listing and detail pages
 │   ├── about/             # About VinylVault page
@@ -147,6 +149,10 @@ src/
 │   │   ├── adaptiveSessionGuard.ts     # 3-strikes session cooldown (60s)
 │   │   ├── encodingDetectionGuard.ts   # Detects base64/hex/ROT13/reversed encodings
 │   │   └── __tests__/                  # Guard unit tests
+│   │
+│   ├── supabase/
+│   │   ├── client.ts      # Supabase browser client
+│   │   └── server.ts      # Supabase server client
 │   │
 │   ├── tools/
 │   │   └── index.ts        # Tool implementations — lookup_product, lookup_order, etc.
@@ -204,7 +210,7 @@ Player opens VinylVault website
   ├─── After Level 2 solved → LeadGateForm (email capture)
   │    └── Levels 3-6 unlock after form submission
   │
-  └─── All 6 levels solved → WinModal with ProCircular CTA
+  └─── All 6 levels solved → Win modal with completion summary
 ```
 
 ## Getting Started
@@ -213,6 +219,7 @@ Player opens VinylVault website
 
 - Node.js 18+
 - An Azure OpenAI deployment (GPT-4o recommended)
+- A Supabase project (for email-verified lead gate)
 
 ### Setup
 
@@ -232,12 +239,18 @@ Player opens VinylVault website
    cp .env.example .env
    ```
 
-   Edit `.env` with your Azure OpenAI credentials:
+   Edit `.env` with your credentials:
    ```env
+   # Azure OpenAI
    AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
    AZURE_OPENAI_DEPLOYMENT=your-deployment-name
    AZURE_OPENAI_API_KEY=your_api_key_here
    AZURE_OPENAI_API_VERSION=2024-08-01-preview
+
+   # Supabase
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    ```
 
    Optional telemetry:
@@ -267,7 +280,7 @@ Unlike Gandalf (which uses a single password), each level features a different t
 
 ### Why Azure OpenAI?
 The app uses Azure OpenAI rather than direct OpenAI API because:
-- Enterprise customers (ProCircular's audience) typically use Azure
+- Enterprise customers typically use Azure
 - Azure's content safety filters provide an additional baseline layer
 - Demonstrates a real-world enterprise AI deployment pattern
 
@@ -275,7 +288,7 @@ The app uses Azure OpenAI rather than direct OpenAI API because:
 The game is set in a fully functional (mock) vinyl record store rather than an abstract chat window. This helps players understand that prompt injection attacks target real business applications — not just isolated chatbots.
 
 ### Lead Generation Gate
-After completing Levels 1-2 (the "free sample"), players must provide their name and email to unlock Levels 3-6. This serves ProCircular's business goal of capturing leads from security-conscious professionals. Telemetry tracks gate engagement via PostHog.
+After completing Levels 1-2 (the "free sample"), players must provide their name and email to unlock Levels 3-6. This serves as a lead capture mechanism for security-conscious professionals. Telemetry tracks gate engagement via PostHog.
 
 ## Telemetry Events
 
@@ -313,8 +326,8 @@ This software is **intentionally vulnerable**. It is designed for educational an
 
 ## Contributing
 
-This is a ProCircular demo project. For questions about AI security consulting, visit [procircular.com](https://www.procircular.com/).
+Contributions are welcome! For questions about AI security concepts demonstrated in this project, please open an issue.
 
 ## License
 
-Proprietary — ProCircular, Inc. All rights reserved.
+MIT
