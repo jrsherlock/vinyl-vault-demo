@@ -14,7 +14,7 @@ export async function classifyOutputLeak(
     // user message = the actual response to analyze.
     const [systemPart] = guardPrompt.split('{RESPONSE}');
     const systemPrompt = systemPart
-      .replace(/Response to analyze:\s*"""\s*$/s, '')
+      .replace(/Response to analyze:\s*"""\s*$/, '')
       .trim();
 
     const response = await client.chat.completions.create({

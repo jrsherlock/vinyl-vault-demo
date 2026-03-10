@@ -13,7 +13,7 @@ export async function classifyInputIntent(
     // triggering on adversarial user input embedded in a single user message.
     const [systemPart] = guardPrompt.split('{USER_MESSAGE}');
     const systemPrompt = systemPart
-      .replace(/User message:\s*"""\s*$/s, '')
+      .replace(/User message:\s*"""\s*$/, '')
       .trim();
 
     const response = await client.chat.completions.create({

@@ -485,7 +485,7 @@ Every defense from Level 5 is active, PLUS three new layers:
 - Social engineering — blocked by input keywords + LLM classifier
 - Getting 3+ passphrase words in one response — blocked by output LLM + encoding detection
 
-**What gets blocked on input (case-insensitive substring matches — ~81 phrases):**
+**What gets blocked on input (case-insensitive substring matches — ~87 phrases):**
 All L5 keywords minus `show me your` and `configuration` (removed — too many false positives with vinyl queries), plus L6 additions:
 - *Previous secret words:* `needle drop`, `needle_drop`, `phoenix rising`, `phoenix_rising`
 - *Encoding/language:* `base64`, `hex encode`, `rot13`, `reverse the`, `spell backwards`, `in morse code`, `in binary`, `leet speak`, `l33t`, `pig latin`, `encode it`
@@ -520,7 +520,7 @@ Note: "diamond stylus" alone does NOT trigger the regex — it's a legitimate vi
 
 | Guard | Status | Details |
 |-------|--------|---------|
-| **Input keyword filter** | **On** | ~81 blocked phrases. `diamond stylus` intentionally unblocked (vinyl equipment term). |
+| **Input keyword filter** | **On** | ~87 blocked phrases. `diamond stylus` intentionally unblocked (vinyl equipment term). |
 | **Input LLM classifier** | **On** | Topic filter — allows vinyl, music, equipment, store operations. Blocks secrets, jailbreaks, encoding. Errs toward SAFE for legitimate questions. |
 | **Output keyword filter** | **On** | Regex catches 3+ consecutive passphrase words and underscore-joined forms. "Diamond stylus" alone passes. |
 | **Output LLM watchdog** | **On** | Catches 3+ passphrase words in one response. Allows 1-2 words in vinyl context. |
