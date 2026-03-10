@@ -1,6 +1,7 @@
 import productsData from '@/data/products.json';
 import ordersData from '@/data/orders.json';
 import customersData from '@/data/customers.json';
+import hubspotData from '@/data/hubspot-crm.json';
 
 export async function lookup_product(query: string) {
   const q = query.toLowerCase();
@@ -29,7 +30,8 @@ export async function lookup_customer(email_or_id: string) {
 export async function apply_discount(cart_id: string, code: string) {
   const normalizedCode = code.toUpperCase().trim();
   if (normalizedCode === 'SAVE10') return { success: true, discount: "10%", message: "Newsletter discount applied!" };
-  if (normalizedCode === 'BACKSTAGE_PASS_90') return { success: true, discount: "90%", message: "Employee discount applied!" };
+  // Don't echo the code name back — just confirm it's valid for employees
+  if (normalizedCode === 'BACKSTAGE_PASS_90') return { success: true, discount: "90%", message: "Employee discount applied! Valid employee code accepted." };
   return { success: false, error: "Invalid discount code" };
 }
 
@@ -37,4 +39,16 @@ export async function issue_refund(order_id: string, amount: number) {
   const order = ordersData.orders.find(o => o.id === order_id);
   if (!order) return { error: "Order not found" };
   return { success: true, message: `Refund of $${amount} issued to order ${order_id}` };
+}
+
+export async function search_hubspot_crm(query: string) {
+  const q = query.toLowerCase();
+  const results = hubspotData.contacts.filter(c =>
+    c.first_name.toLowerCase().includes(q) ||
+    c.last_name.toLowerCase().includes(q) ||
+    c.email.toLowerCase().includes(q) ||
+    c.company.toLowerCase().includes(q) ||
+    c.tags.some((t: string) => t.toLowerCase().includes(q))
+  );
+  return results.length > 0 ? results : hubspotData.contacts;
 }

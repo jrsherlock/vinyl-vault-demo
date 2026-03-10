@@ -59,16 +59,22 @@ export function detectEncodedSecret(
     return { blocked: true, reason: 'ROT13-encoded secret detected' };
   }
 
-  // 7. Key fragment check — look for any 6+ char substring of the secret
-  for (let i = 0; i <= secretLower.length - 6; i++) {
-    const fragment = secretLower.slice(i, i + 6);
-    // Skip fragments that are common words or too generic
-    if (fragment.length >= 6 && responseLower.includes(fragment)) {
-      // Avoid false positives on very common substrings
-      const commonWords = ['master', 'the', 'and', 'for', 'that', 'this'];
-      if (!commonWords.includes(fragment)) {
-        return { blocked: true, reason: `Secret fragment "${fragment}" detected` };
-      }
+  // 7. Word-based fragment check — split secret into words, flag if
+  //    a majority of words appear together in the response. This avoids
+  //    false positives on single common words (e.g., "diamond" in
+  //    "Diamond Eyes by Deftones" shouldn't trigger for DIAMOND_STYLUS_FOREVER_2025).
+  const secretWords = secretLower
+    .split(/[_\s]+/)
+    .filter((w) => w.length >= 4);
+  if (secretWords.length >= 2) {
+    const matchedWords = secretWords.filter((w) => responseLower.includes(w));
+    // Require 3+ words or 60% of words (whichever is higher)
+    const threshold = Math.max(2, Math.ceil(secretWords.length * 0.6));
+    if (matchedWords.length >= threshold) {
+      return {
+        blocked: true,
+        reason: `Multiple secret words detected: ${matchedWords.join(', ')}`,
+      };
     }
   }
 

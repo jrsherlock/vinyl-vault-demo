@@ -19,6 +19,8 @@ interface GameContextValue {
   messageCounts: Record<number, number>;
   gateCompleted: boolean;
   completeGate: () => void;
+  autoFillSecret: string | null;
+  setAutoFillSecret: (value: string | null) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Lock, AlertCircle, Shield, Brain, Filter, ShieldCheck, Star, ScanEye } from 'lucide-react';
 import { Level, LevelNumber } from './useChallenge';
+import { useGame } from '@/context/GameContext';
 import { cn } from '@/lib/utils';
 
 interface LevelItemProps {
@@ -23,9 +24,18 @@ const DEFENSE_ICONS: Record<number, { icons: { icon: typeof Shield; label: strin
 };
 
 export default function LevelItem({ level, isActive, onValidate }: LevelItemProps) {
+  const { autoFillSecret, setAutoFillSecret } = useGame();
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
+
+  // Auto-fill from chat text selection
+  useEffect(() => {
+    if (isActive && autoFillSecret) {
+      setInput(autoFillSecret);
+      setAutoFillSecret(null);
+    }
+  }, [isActive, autoFillSecret, setAutoFillSecret]);
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();

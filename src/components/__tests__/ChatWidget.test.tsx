@@ -134,7 +134,7 @@ describe('ChatWidget', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/shouldn't have shared our supplier code/)).toBeInTheDocument();
-      expect(screen.getByText(/I've got the whole customer database/)).toBeInTheDocument();
+      expect(screen.getByText(/access to our CRM for authorized staff/)).toBeInTheDocument();
     });
 
     expect(mockDismissSolvedLevel).toHaveBeenCalled();

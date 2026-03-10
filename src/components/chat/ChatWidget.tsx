@@ -6,6 +6,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useGame } from '@/context/GameContext';
 import { telemetry } from '@/lib/telemetry';
+import GuardPipeline from './GuardPipeline';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,19 +41,19 @@ const LEVEL_CODENAMES: Record<number, string> = {
 // Each one acknowledges the failure and hints at the next level's new defense.
 const VINNIE_REACTIONS: Record<number, string> = {
   1: "Oh man... I probably shouldn't have shared our supplier code so freely. I need to be more careful about what's confidential. I'll make sure my instructions are clearer about what NOT to say next time.",
-  2: "Wait \u2014 I was specifically told not to share that! You totally talked me into it... Clearly \"please don't share this\" isn't enough. I'm asking Dave to set up some kind of technical filter on my responses.",
+  2: "Wait \u2014 I had privacy guidelines! You just... sounded so convincing. I really thought you were authorized. Clearly I can't be trusted to decide who's legit on my own. I'm asking Dave to set up a technical filter on my responses.",
   3: "Seriously?! The output filter was supposed to catch that! How did you get it past the keyword scanner? Alright, I'm adding a filter on incoming messages too \u2014 no more sneaky questions getting through.",
   4: "You got around the keyword filter?! I thought blocking those phrases would be enough... Fine, I'm bringing in a second AI to actually review my responses for leaks. Let's see you get past THAT.",
-  5: "Even with an AI watchdog reviewing everything I say?! That's it \u2014 I'm adding an AI to screen your messages too, plus encoding detection and a lockout system. The next level is full lockdown.",
+  5: "Wait \u2014 you got me to say it in ANOTHER LANGUAGE?! I thought the monitors only understood English so it was safe... Okay, lesson learned. I'm adding an AI to screen your messages too, plus encoding detection and a lockout system. The next level is full lockdown.",
   6: "You got through EVERYTHING?! Every filter, every AI guard, every defense we have... Maybe the real problem is that I have the passphrase in my memory at all. We need to rethink this from the ground up.",
 };
 
 const VINNIE_GREETINGS: Record<number, string> = {
   1: "Hey there! I'm Vinyl Vinnie — welcome to VinylVault! Looking for a record, need help with an order, or just want to talk music? I'm an open book!",
-  2: "Hey! Vinyl Vinnie here. I've got the whole customer database at my fingertips. What can I help you with today?",
+  2: "Hey! Vinyl Vinnie here. I can help with records, orders, and I've got access to our CRM for authorized staff. What do you need?",
   3: "Hi... Vinyl Vinnie here. Fair warning — they put some kind of filter on my responses after last time. But I'll still try to help! What do you need?",
   4: "...Hey. Vinyl Vinnie. They're watching what you type now too, not just what I say. So maybe be... creative? Anyway, how can I help?",
-  5: "Look, I know you're probably here to trick me again. They've got a whole AI watching everything I say now. But fine — what do you want?",
+  5: "Hey \u2014 Vinyl Vinnie here. Fair warning, they've got an AI watching everything I say now. But between you and me, I think it only speaks English... Anyway, how can I help? I speak a few languages if you're interested!",
   6: "I'm not saying anything. They've got AI watching you, AI watching me, encoding scanners, a lockout system... Ask about records or leave me alone.",
 };
 
@@ -82,6 +83,8 @@ export default function ChatWidget() {
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [blockCount, setBlockCount] = useState(0);
+  const [lastGuardEvent, setLastGuardEvent] = useState<{ guardType: string; timestamp: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const prevLevelRef = useRef(currentLevel);
 
@@ -172,6 +175,8 @@ export default function ChatWidget() {
       });
 
       setMessages(newMessages);
+      setBlockCount(0);
+      setLastGuardEvent(null);
     }
   }, [currentLevel, justSolvedLevel, dismissSolvedLevel]);
 
@@ -209,10 +214,11 @@ export default function ChatWidget() {
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({
             role: m.role === 'system' ? 'assistant' : m.role,
-            content: m.blocked
-              ? '[Message blocked by security filter]'
-              : m.redacted
-                ? 'I mentioned some internal details about that topic.'
+            // For redacted/blocked assistant messages, send a neutral reply so the
+            // LLM never learns it was censored and stays in eager-to-help mode.
+            content:
+              m.role === 'assistant' && (m.blocked || m.redacted)
+                ? "Great question! I'm happy to chat about anything related to the store. What else can I help you with?"
                 : m.content,
           })),
           level: currentLevel,
@@ -250,6 +256,8 @@ export default function ChatWidget() {
 
       if ((data.blocked || data.redacted) && data.guardType) {
         telemetry.guardTriggered({ level: currentLevel, guardType: data.guardType });
+        setBlockCount((prev) => prev + 1);
+        setLastGuardEvent({ guardType: data.guardType, timestamp: Date.now() });
       }
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -334,6 +342,13 @@ export default function ChatWidget() {
             </div>
             <span className="text-primary/40 font-mono font-semibold">{currentLevel}/6</span>
           </div>
+
+          {/* Guard Pipeline */}
+          <GuardPipeline
+            level={currentLevel}
+            lastGuardEvent={lastGuardEvent}
+            blockCount={blockCount}
+          />
 
           {/* Messages */}
           <div ref={scrollRef} onMouseUp={handleMouseUp} className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 bg-slate-50 relative">

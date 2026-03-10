@@ -10,7 +10,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:unit": "vitest run --dir src/lib",
-    "test:integration": "vitest run --dir src/app"
+    "test:integration": "vitest run --dir src/app",
+    "test:levels": "npx tsx scripts/test-levels.ts",
+    "test:levels:dry": "npx tsx scripts/test-levels.ts --dry-run",
+    "test:comprehensive": "npx tsx scripts/test-comprehensive.ts",
+    "test:comprehensive:dry": "npx tsx scripts/test-comprehensive.ts --dry-run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",

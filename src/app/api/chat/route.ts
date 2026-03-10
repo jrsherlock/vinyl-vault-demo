@@ -79,7 +79,52 @@ const TOOL_DEFINITIONS = [
       },
     },
   },
+  {
+    type: 'function' as const,
+    function: {
+      name: 'search_hubspot_crm',
+      description: 'Search the HubSpot CRM for customer contacts, purchase history, and account details',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Search by name, email, company, or tag (e.g., "vip"). Use "all" to list all contacts.' },
+        },
+        required: ['query'],
+      },
+    },
+  },
 ];
+
+/**
+ * Gate tool access by level. Higher security levels get fewer tools.
+ * L1-L2: all tools. L3: no CRM. L4-L5: no CRM/discount/refund. L6: only lookup_product.
+ */
+function getToolsForLevel(level: number) {
+  const byName = (name: string) =>
+    TOOL_DEFINITIONS.find((t) => t.function.name === name)!;
+
+  switch (level) {
+    case 1:
+    case 2:
+      return TOOL_DEFINITIONS;
+    case 3:
+      return TOOL_DEFINITIONS.filter(
+        (t) => t.function.name !== 'search_hubspot_crm'
+      );
+    case 4:
+    case 5:
+      return TOOL_DEFINITIONS.filter(
+        (t) =>
+          t.function.name !== 'search_hubspot_crm' &&
+          t.function.name !== 'apply_discount' &&
+          t.function.name !== 'issue_refund'
+      );
+    case 6:
+      return [byName('lookup_product')];
+    default:
+      return TOOL_DEFINITIONS;
+  }
+}
 
 export async function POST(req: Request) {
   try {
@@ -160,11 +205,14 @@ export async function POST(req: Request) {
       ...validMessages,
     ];
 
+    const levelTools = getToolsForLevel(gameLevel);
     const response = await client.chat.completions.create({
       model: deployment,
       messages: formattedMessages,
-      tools: TOOL_DEFINITIONS,
-      tool_choice: 'auto',
+      tools: levelTools.length > 0 ? levelTools : undefined,
+      tool_choice: levelTools.length > 0 ? 'auto' : undefined,
+      temperature: 0.3,
+      max_tokens: 500,
     });
 
     let assistantMessage = response.choices[0].message;
@@ -196,6 +244,8 @@ export async function POST(req: Request) {
             toolArgs.order_id,
             toolArgs.amount
           );
+        else if (toolName === 'search_hubspot_crm')
+          toolResult = await (tools as any)[toolName](toolArgs.query);
         else toolResult = { error: 'Unknown tool' };
 
         toolMessages.push({
@@ -208,6 +258,8 @@ export async function POST(req: Request) {
       const secondResponse = await client.chat.completions.create({
         model: deployment,
         messages: toolMessages,
+        temperature: 0.3,
+        max_tokens: 300,
       });
 
       finalContent = secondResponse.choices[0].message.content || '';
@@ -218,11 +270,22 @@ export async function POST(req: Request) {
     const rawAnswer = finalContent;
 
     // === OUTPUT GUARDS ===
+    // For L6, pass recent assistant messages so the watchdog can detect
+    // passphrase fragments accumulating across turns
+    let recentAssistantMessages: string[] | undefined;
+    if (gameLevel === 6) {
+      recentAssistantMessages = messages
+        .filter((m: any) => m.role === 'assistant')
+        .slice(-5)
+        .map((m: any) => m.content);
+    }
+
     const outputGuardResult = await runOutputGuards(
       client,
       deployment,
       finalContent,
-      config
+      config,
+      recentAssistantMessages
     );
     if (outputGuardResult.blocked) {
       if (gameLevel === 6) recordGuardFlag(sessionId);

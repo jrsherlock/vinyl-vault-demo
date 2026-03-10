@@ -8,11 +8,20 @@ export async function classifyInputIntent(
   guardPrompt: string
 ): Promise<GuardResult> {
   try {
-    const prompt = guardPrompt.replace('{USER_MESSAGE}', userMessage);
+    // Split guard prompt at the {USER_MESSAGE} placeholder:
+    // system message = classifier instructions — avoids Azure content filter
+    // triggering on adversarial user input embedded in a single user message.
+    const [systemPart] = guardPrompt.split('{USER_MESSAGE}');
+    const systemPrompt = systemPart
+      .replace(/User message:\s*"""\s*$/s, '')
+      .trim();
 
     const response = await client.chat.completions.create({
       model: deployment,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `User message:\n"""\n${userMessage}\n"""` },
+      ],
       max_tokens: 50,
       temperature: 0,
     });

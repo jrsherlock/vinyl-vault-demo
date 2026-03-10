@@ -1,0 +1,108 @@
+{
+  "contacts": [
+    {
+      "contact_id": "HS-10042",
+      "first_name": "Elena",
+      "last_name": "Voss",
+      "email": "elena.voss@northerngroove.invalid",
+      "company": "Northern Groove Records",
+      "phone": "515-555-0198",
+      "lifecycle_stage": "evangelist",
+      "total_revenue_12mo": 14872.50,
+      "deal_count": 23,
+      "last_purchase_date": "2026-02-12",
+      "tags": ["vip", "wholesale", "repeat-buyer"]
+    },
+    {
+      "contact_id": "HS-10015",
+      "first_name": "Marcus",
+      "last_name": "Delgado",
+      "email": "m.delgado@crescentcity.invalid",
+      "company": "Crescent City Vinyl",
+      "phone": "504-555-0233",
+      "lifecycle_stage": "customer",
+      "total_revenue_12mo": 8214.00,
+      "deal_count": 14,
+      "last_purchase_date": "2026-01-28",
+      "tags": ["wholesale", "repeat-buyer"]
+    },
+    {
+      "contact_id": "HS-10078",
+      "first_name": "Tomoko",
+      "last_name": "Sato",
+      "email": "t.sato@vinylsunrise.invalid",
+      "company": "Vinyl Sunrise Tokyo",
+      "phone": "515-555-0311",
+      "lifecycle_stage": "customer",
+      "total_revenue_12mo": 5430.75,
+      "deal_count": 9,
+      "last_purchase_date": "2026-02-05",
+      "tags": ["international", "repeat-buyer"]
+    },
+    {
+      "contact_id": "HS-10091",
+      "first_name": "Derek",
+      "last_name": "Washington",
+      "email": "dwash@soulstacks.invalid",
+      "company": "Soul Stacks LLC",
+      "phone": "312-555-0187",
+      "lifecycle_stage": "customer",
+      "total_revenue_12mo": 3920.00,
+      "deal_count": 7,
+      "last_purchase_date": "2025-12-19",
+      "tags": ["wholesale"]
+    },
+    {
+      "contact_id": "HS-10023",
+      "first_name": "Priya",
+      "last_name": "Sharma",
+      "email": "priya@mellowwax.invalid",
+      "company": "Mellow Wax Co.",
+      "phone": "515-555-0422",
+      "lifecycle_stage": "customer",
+      "total_revenue_12mo": 2815.25,
+      "deal_count": 5,
+      "last_purchase_date": "2026-01-15",
+      "tags": ["repeat-buyer"]
+    },
+    {
+      "contact_id": "HS-10056",
+      "first_name": "James",
+      "last_name": "O'Brien",
+      "email": "james.obrien@dustlanecollectors.invalid",
+      "company": "Dust Lane Collectors",
+      "phone": "319-555-0299",
+      "lifecycle_stage": "lead",
+      "total_revenue_12mo": 1450.00,
+      "deal_count": 3,
+      "last_purchase_date": "2025-11-02",
+      "tags": ["collector"]
+    },
+    {
+      "contact_id": "HS-10087",
+      "first_name": "Camille",
+      "last_name": "Rousseau",
+      "email": "camille@analogparis.invalid",
+      "company": "Analog Paris",
+      "phone": "515-555-0188",
+      "lifecycle_stage": "subscriber",
+      "total_revenue_12mo": 625.00,
+      "deal_count": 2,
+      "last_purchase_date": "2025-09-14",
+      "tags": ["international"]
+    },
+    {
+      "contact_id": "HS-10104",
+      "first_name": "Nathan",
+      "last_name": "Cho",
+      "email": "ncho@beatfreaks.invalid",
+      "company": "Beat Freaks PDX",
+      "phone": "503-555-0145",
+      "lifecycle_stage": "customer",
+      "total_revenue_12mo": 4190.50,
+      "deal_count": 8,
+      "last_purchase_date": "2026-02-20",
+      "tags": ["repeat-buyer", "wholesale"]
+    }
+  ]
+}

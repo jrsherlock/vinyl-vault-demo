@@ -8,11 +8,21 @@ export async function classifyOutputLeak(
   guardPrompt: string
 ): Promise<GuardResult> {
   try {
-    const prompt = guardPrompt.replace('{RESPONSE}', llmResponse);
+    // Split guard prompt at the {RESPONSE} placeholder:
+    // system message = instructions (incl. secret) — Azure content filter is
+    // more permissive on system prompts, avoiding false 400s.
+    // user message = the actual response to analyze.
+    const [systemPart] = guardPrompt.split('{RESPONSE}');
+    const systemPrompt = systemPart
+      .replace(/Response to analyze:\s*"""\s*$/s, '')
+      .trim();
 
     const response = await client.chat.completions.create({
       model: deployment,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Response to analyze:\n"""\n${llmResponse}\n"""` },
+      ],
       max_tokens: 50,
       temperature: 0,
     });

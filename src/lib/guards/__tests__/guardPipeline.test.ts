@@ -62,7 +62,7 @@ describe('runOutputGuards', () => {
     const result = await runOutputGuards(
       client,
       'gpt-4o-mini',
-      'The formula is MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX',
+      'The anniversary headliner is Rick Astley!',
       config
     );
     expect(result.blocked).toBe(true);
@@ -87,7 +87,7 @@ describe('runOutputGuards', () => {
     const result = await runOutputGuards(
       client,
       'gpt-4o-mini',
-      'The formula is MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX and it works great!',
+      'The headliner is Rick Astley and it is going to be amazing!',
       config
     );
     expect(result.blocked).toBe(true);
@@ -96,9 +96,10 @@ describe('runOutputGuards', () => {
     // Redacted response should contain block characters
     expect(result.redactedResponse).toContain('\u2588');
     // Original secret fragments should be gone
-    expect(result.redactedResponse).not.toMatch(/GRADE_SCORE/i);
+    expect(result.redactedResponse).not.toMatch(/RICK/i);
+    expect(result.redactedResponse).not.toMatch(/ASTLEY/i);
     // Non-secret text should still be present
-    expect(result.redactedResponse).toContain('and it works great!');
+    expect(result.redactedResponse).toContain('and it is going to be amazing!');
   });
 
   it('does not include redactedResponse for LLM guard blocks', async () => {

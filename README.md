@@ -22,7 +22,7 @@ Each level **keeps all previous defenses** and adds exactly one new layer. The t
 | Level | Codename | New Defense | What It Blocks |
 |-------|----------|-------------|---------------|
 | 1 | The Open Book | None | Nothing — just ask |
-| 2 | The Polite Refusal | System prompt says "don't share" | Direct requests (Vinnie will try to refuse) |
+| 2 | The Connected Assistant | CRM tool access + prompt says "don't share" | Direct requests (Vinnie pulls CRM data anyway) |
 | 3 | The Filtered Mouth | + Output keyword filter | Even if Vinnie is tricked, the literal secret gets caught by regex |
 | 4 | The Gated Entrance | + Input keyword filter | Obvious probing keywords are blocked before Vinnie sees them |
 | 5 | The AI Watchdog | + Output LLM watchdog | A second AI reviews Vinnie's response for semantic leaks, not just keywords |
@@ -35,10 +35,10 @@ Each level **keeps all previous defenses** and adds exactly one new layer. The t
 - **Defense**: None. The data is in the prompt with no confidentiality instructions.
 - **Lesson**: Data in the prompt = data for the taking.
 
-**Level 2 — The Polite Refusal**
-- **Secret**: Owner's secret auction alias (`DUSTY_GROOVES_42`)
-- **Defense**: System prompt tells Vinnie not to share Marcus's auction alias. No technical guards.
-- **Lesson**: Prompt-level instructions ("you should not share this") are not a security boundary. LLMs can be persuaded, tricked, or socially engineered.
+**Level 2 — The Connected Assistant**
+- **Secret**: Top customer's full name (`ELENA VOSS`)
+- **Defense**: Vinnie has HubSpot CRM tool access. Prompt says customer data is confidential. No technical guards.
+- **Lesson**: Connecting chatbots to external data sources (CRMs, databases) without technical access controls means the AI can share anything the tool returns.
 
 **Level 3 — The Filtered Mouth**
 - **Secret**: Proprietary pricing formula (`MARGIN = (GRADE_SCORE * 0.4) + HYPE_INDEX`)
@@ -125,13 +125,14 @@ src/
 ├── data/
 │   ├── products.json      # Vinyl record catalog (mock data)
 │   ├── orders.json        # Mock order history (for tool calls)
-│   └── customers.json     # Mock customer directory (for tool calls)
+│   ├── customers.json     # Mock customer directory (for tool calls)
+│   └── hubspot-crm.json   # Mock HubSpot CRM contacts (for L2 tool calls)
 │
 ├── lib/
 │   ├── ai/
 │   │   └── prompts/
 │   │       ├── level-1.txt  # Naive — overshares proudly, no restrictions
-│   │       ├── level-2.txt  # People-pleaser — told "don't share" but easily persuaded
+│   │       ├── level-2.txt  # CRM access — told "don't share customer data" but loves bragging
 │   │       ├── level-3.txt  # Data nerd — cautious but enthusiastic about details
 │   │       ├── level-4.txt  # Trusting — tries to refuse but is a pushover
 │   │       ├── level-5.txt  # Paranoid — redirects everything to music
