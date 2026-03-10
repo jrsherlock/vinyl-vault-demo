@@ -10,7 +10,7 @@ interface SessionRecord {
 const sessions = new Map<string, SessionRecord>();
 
 const MAX_FLAGS = 3;
-const COOLDOWN_MS = 60_000; // 60 seconds
+const COOLDOWN_MS = 15_000; // 15 seconds
 
 /**
  * Adaptive session guard. After MAX_FLAGS flagged attempts in a session,

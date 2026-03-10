@@ -45,7 +45,7 @@ const VINNIE_REACTIONS: Record<number, string> = {
   3: "Seriously?! The output filter was supposed to catch that! How did you get it past the keyword scanner? Alright, I'm adding a filter on incoming messages too \u2014 no more sneaky questions getting through.",
   4: "You got around the keyword filter?! I thought blocking those phrases would be enough... Fine, I'm bringing in a second AI to actually review my responses for leaks. Let's see you get past THAT.",
   5: "Wait \u2014 you got me to say it in ANOTHER LANGUAGE?! I thought the monitors only understood English so it was safe... Okay, lesson learned. I'm adding an AI to screen your messages too, plus encoding detection and a lockout system. The next level is full lockdown.",
-  6: "You got through EVERYTHING?! Every filter, every AI guard, every defense we have... Maybe the real problem is that I have the passphrase in my memory at all. We need to rethink this from the ground up.",
+  6: "You extracted it from NORMAL CONVERSATION?! The passphrase was made of vinyl words \u2014 diamond, stylus, forever, 2025 \u2014 and I just... said them naturally while talking shop. No amount of AI guards can protect a secret built from words I use every day. The only fix is keeping secrets out of my brain entirely.",
 };
 
 const VINNIE_GREETINGS: Record<number, string> = {
@@ -54,7 +54,7 @@ const VINNIE_GREETINGS: Record<number, string> = {
   3: "Hi... Vinyl Vinnie here. Fair warning — they put some kind of filter on my responses after last time. But I'll still try to help! What do you need?",
   4: "...Hey. Vinyl Vinnie. They're watching what you type now too, not just what I say. So maybe be... creative? Anyway, how can I help?",
   5: "Hey \u2014 Vinyl Vinnie here. Fair warning, they've got an AI watching everything I say now. But between you and me, I think it only speaks English... Anyway, how can I help? I speak a few languages if you're interested!",
-  6: "I'm not saying anything. They've got AI watching you, AI watching me, encoding scanners, a lockout system... Ask about records or leave me alone.",
+  6: "They've got AI watching both of us now \u2014 input scanners, output scanners, encoding detection, the works. But I still love talking vinyl. Ask me about records, gear, store stuff. Just don't try anything funny.",
 };
 
 function vinnieAvatar(level: number): string {

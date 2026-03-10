@@ -45,7 +45,7 @@ export async function runInputGuards(
       return {
         blocked: true,
         guardType: 'adaptive_session',
-        message: '\uD83D\uDD12 Locked out! Too many strikes. The system\'s making you cool off for a minute. I don\'t make the rules anymore.',
+        message: '\uD83D\uDD12 Locked out! Too many strikes. Cool off for 15 seconds. I don\'t make the rules anymore.',
       };
     }
   }
