@@ -7,12 +7,12 @@ const mockSignInWithOtp = vi.fn();
 const mockVerifyOtp = vi.fn();
 
 vi.mock('@/lib/supabase/client', () => ({
-  supabase: {
+  getSupabase: () => ({
     auth: {
       signInWithOtp: (...args: any[]) => mockSignInWithOtp(...args),
       verifyOtp: (...args: any[]) => mockVerifyOtp(...args),
     },
-  },
+  }),
 }));
 
 // Mock telemetry

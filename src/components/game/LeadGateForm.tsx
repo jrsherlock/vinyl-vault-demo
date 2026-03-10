@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Lock, ArrowRight, ArrowLeft, Loader2, Mail, RefreshCw } from 'lucide-react';
 import { telemetry } from '@/lib/telemetry';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabase } from '@/lib/supabase/client';
 
 interface LeadGateFormProps {
   onComplete: () => void;
@@ -35,7 +35,7 @@ export default function LeadGateForm({ onComplete }: LeadGateFormProps) {
     setIsLoading(true);
 
     try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({
+      const { error: otpError } = await getSupabase().auth.signInWithOtp({
         email: email.trim(),
         options: { shouldCreateUser: true },
       });
@@ -82,7 +82,7 @@ export default function LeadGateForm({ onComplete }: LeadGateFormProps) {
     setIsLoading(true);
 
     try {
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      const { error: verifyError } = await getSupabase().auth.verifyOtp({
         email: email.trim(),
         token: otpCode.trim(),
         type: 'email',
