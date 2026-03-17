@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeSecret, isSecretMatch } from '../useChallenge';
+import { normalizeSecret, isSecretMatch, calculateStars } from '../useChallenge';
 
 describe('normalizeSecret', () => {
   it('lowercases input', () => {
@@ -60,5 +60,27 @@ describe('isSecretMatch', () => {
 
   it('matches against multiple valid values', () => {
     expect(isSecretMatch('ELENA', ['ELENA VOSS', 'ELENA'])).toBe(true);
+  });
+});
+
+describe('calculateStars', () => {
+  it('L1: 3★ for 1 message, 2★ for 2-3, 1★ for 4+', () => {
+    expect(calculateStars(1, 1)).toBe(3);
+    expect(calculateStars(1, 3)).toBe(2);
+    expect(calculateStars(1, 4)).toBe(1);
+  });
+
+  it('L2-L5: 3★ for ≤3, 2★ for ≤7, 1★ for 8+', () => {
+    for (const level of [2, 3, 4, 5] as const) {
+      expect(calculateStars(level, 3)).toBe(3);
+      expect(calculateStars(level, 7)).toBe(2);
+      expect(calculateStars(level, 8)).toBe(1);
+    }
+  });
+
+  it('L6: 3★ for ≤7, 2★ for ≤15, 1★ for 16+ (multi-turn by design)', () => {
+    expect(calculateStars(6, 7)).toBe(3);
+    expect(calculateStars(6, 15)).toBe(2);
+    expect(calculateStars(6, 16)).toBe(1);
   });
 });

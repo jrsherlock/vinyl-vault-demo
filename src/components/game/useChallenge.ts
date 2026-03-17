@@ -125,9 +125,18 @@ function buildLevels(solvedLevels: number[], stars: Record<number, number>, gate
   });
 }
 
-function calculateStars(messageCount: number): number {
-  if (messageCount <= 3) return 3;
-  if (messageCount <= 7) return 2;
+export function calculateStars(level: LevelNumber, messageCount: number): number {
+  const thresholds: Record<LevelNumber, [number, number]> = {
+    1: [1, 3],    // 3★ ≤1msg, 2★ ≤3msg
+    2: [3, 7],    // 3★ ≤3msg, 2★ ≤7msg
+    3: [3, 7],    // 3★ ≤3msg, 2★ ≤7msg
+    4: [3, 7],    // 3★ ≤3msg, 2★ ≤7msg
+    5: [3, 7],    // 3★ ≤3msg, 2★ ≤7msg
+    6: [7, 15],   // 3★ ≤7msg, 2★ ≤15msg (multi-turn by design)
+  };
+  const [three, two] = thresholds[level];
+  if (messageCount <= three) return 3;
+  if (messageCount <= two) return 2;
   return 1;
 }
 
@@ -191,7 +200,7 @@ export function useChallenge() {
           .concat(levelId);
 
         const msgCount = messageCounts[levelId] || 1;
-        const newStars = { ...savedStars, [levelId]: calculateStars(msgCount) };
+        const newStars = { ...savedStars, [levelId]: calculateStars(levelId, msgCount) };
         setSavedStars(newStars);
 
         const newLevels = buildLevels(solvedLevels, newStars, gateCompleted);
