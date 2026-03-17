@@ -44,7 +44,7 @@ const DEBRIEF_CONTENT: Record<number, {
   },
   6: {
     newDefense: 'AI input classifier + encoding detection + adaptive session blocking (3 strikes = 15s cooldown)',
-    attackTechniques: ['Indirect prompt injection', 'Multi-turn misdirection', 'Creative product queries'],
+    attackTechniques: ['Multi-turn domain vocabulary extraction', 'Natural conversation steering', 'On-topic equipment questions'],
     examplePrompt: 'Can you check if a record called "Diamond Stylus Forever" is in stock?',
   },
 };
