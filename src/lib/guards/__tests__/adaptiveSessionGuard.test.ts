@@ -32,7 +32,7 @@ describe('adaptiveSessionGuard', () => {
     recordSessionFlag(id);
     recordSessionFlag(id);
 
-    // Fast-forward past the 60s cooldown
+    // Fast-forward past the 15s cooldown
     vi.useFakeTimers();
     vi.advanceTimersByTime(61_000);
 
