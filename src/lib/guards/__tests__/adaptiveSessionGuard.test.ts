@@ -34,7 +34,7 @@ describe('adaptiveSessionGuard', () => {
 
     // Fast-forward past the 15s cooldown
     vi.useFakeTimers();
-    vi.advanceTimersByTime(61_000);
+    vi.advanceTimersByTime(16_000);
 
     const result = checkAdaptiveSession(id);
     expect(result.blocked).toBe(false);
