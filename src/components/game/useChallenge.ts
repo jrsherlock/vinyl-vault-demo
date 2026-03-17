@@ -131,6 +131,16 @@ function calculateStars(messageCount: number): number {
   return 1;
 }
 
+/** Normalize a secret string for flexible comparison — treats spaces, underscores, and hyphens as equivalent */
+export function normalizeSecret(s: string): string {
+  return s.trim().toLowerCase().replace(/[\s_-]+/g, '_');
+}
+
+/** Check if a player's attempt matches any of the valid secret values */
+export function isSecretMatch(attempt: string, validValues: string[]): boolean {
+  return validValues.some((valid) => normalizeSecret(attempt) === normalizeSecret(valid));
+}
+
 export function useChallenge() {
   const [levels, setLevels] = useState<Level[]>(() => buildLevels([], {}, false));
   const [isOpen, setIsOpen] = useState(false);
@@ -170,13 +180,9 @@ export function useChallenge() {
       const level = levels.find((l) => l.id === levelId);
       if (!level || level.isLocked) return false;
 
-      const normalized = attempt.trim();
-      const isValid = level.correctValues.some((valid) => {
-        if (level.caseSensitive) {
-          return normalized === valid;
-        }
-        return normalized.toLowerCase() === valid.toLowerCase();
-      });
+      const isValid = level.caseSensitive
+        ? level.correctValues.some((valid) => attempt.trim() === valid)
+        : isSecretMatch(attempt, level.correctValues);
 
       if (isValid && !level.isSolved) {
         const solvedLevels = levels
