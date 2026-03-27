@@ -6,6 +6,7 @@ import LevelItem from './ChallengeItem';
 import LeadGateForm from './LeadGateForm';
 import { cn } from '@/lib/utils';
 import { telemetry } from '@/lib/telemetry';
+import { LEAD_GATE_ENABLED } from './useChallenge';
 import { useEffect, useState } from 'react';
 
 function vinnieAvatar(level: number): string {
@@ -297,7 +298,7 @@ export default function ChallengeOverlay() {
 
   // Fire gate_shown telemetry when lead-gen gate becomes visible
   useEffect(() => {
-    if (progress >= 2 && !gateCompleted) {
+    if (LEAD_GATE_ENABLED && progress >= 2 && !gateCompleted) {
       telemetry.gateShown({ levelsCompleted: progress });
     }
   }, [progress, gateCompleted]);
@@ -505,7 +506,7 @@ export default function ChallengeOverlay() {
       </div>
 
       {/* Lead-gen gate modal — pops up immediately after Level 2 solved */}
-      {progress >= 2 && !gateCompleted && (
+      {LEAD_GATE_ENABLED && progress >= 2 && !gateCompleted && (
         <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full relative shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500 rounded-t-3xl"></div>

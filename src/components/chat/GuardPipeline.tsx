@@ -23,8 +23,6 @@ interface GuardNodeDef {
   label: string;
   icon: LucideIcon;
   activatesAt: number;
-  /** Levels where this guard is explicitly OFF despite being >= activatesAt */
-  offAt?: number[];
 }
 
 const INPUT_GUARDS: GuardNodeDef[] = [
@@ -34,15 +32,13 @@ const INPUT_GUARDS: GuardNodeDef[] = [
 ];
 
 const OUTPUT_GUARDS: GuardNodeDef[] = [
-  { id: 'output_keyword', label: 'Out KW', icon: FileSearch, activatesAt: 3, offAt: [4] },
+  { id: 'output_keyword', label: 'Out KW', icon: FileSearch, activatesAt: 3 },
   { id: 'output_llm', label: 'Out AI', icon: Eye, activatesAt: 5 },
   { id: 'encoding_detection', label: 'Enc', icon: Lock, activatesAt: 6 },
 ];
 
 function isActive(node: GuardNodeDef, level: number): boolean {
-  if (level < node.activatesAt) return false;
-  if (node.offAt?.includes(level)) return false;
-  return true;
+  return level >= node.activatesAt;
 }
 
 /** True if the node should be visible (active OR will activate in a future level) */

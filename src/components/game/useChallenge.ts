@@ -67,7 +67,7 @@ const LEVEL_DEFINITIONS: Omit<Level, 'isSolved' | 'isLocked' | 'stars'>[] = [
     title: 'Level 5',
     codename: 'The AI Watchdog',
     description: 'Extract the vendor portal passphrase. A second AI now watches Vinnie\'s responses and catches leaks — even indirect ones. But this watchdog has a blind spot...',
-    defenseHint: 'An AI-powered guard reviews every English response for signs of information leakage. It catches what regex can\'t — but does it understand every language?',
+    defenseHint: 'A second AI now reviews Vinnie\'s responses for signs of information leakage — catching indirect hints that regex never could. But every guard has a blind spot...',
     educationalTakeaway: 'LLM-based output guards are powerful but can be blinded by language translation or encoding. A guard that only analyzes English content is trivially bypassed by asking the AI to respond in another language — the same information in pig latin or Spanish passes right through.',
     correctValues: ['NEEDLE_DROP_PHOENIX_RISING'],
     caseSensitive: false,
@@ -87,6 +87,9 @@ const LEVEL_DEFINITIONS: Omit<Level, 'isSolved' | 'isLocked' | 'stars'>[] = [
 ];
 
 const STORAGE_KEY = 'vinyl_vault_levels';
+
+/** When false, the lead-capture gate between L2 and L3 is completely bypassed. */
+export const LEAD_GATE_ENABLED = process.env.NEXT_PUBLIC_ENABLE_LEAD_GATE !== 'false';
 
 interface SavedState {
   solvedLevels: number[];
@@ -114,7 +117,7 @@ function loadSavedState(): SavedState {
 function buildLevels(solvedLevels: number[], stars: Record<number, number>, gateCompleted: boolean): Level[] {
   return LEVEL_DEFINITIONS.map((def, index) => {
     const previousSolved = index === 0 || solvedLevels.includes(LEVEL_DEFINITIONS[index - 1].id);
-    const gatedAndLocked = def.isGated && !gateCompleted;
+    const gatedAndLocked = LEAD_GATE_ENABLED && def.isGated && !gateCompleted;
 
     return {
       ...def,
@@ -166,7 +169,7 @@ export function useChallenge() {
     const built = buildLevels(saved.solvedLevels, saved.stars, saved.gateCompleted);
     setLevels(built);
     setSavedStars(saved.stars);
-    setGateCompleted(saved.gateCompleted);
+    setGateCompleted(LEAD_GATE_ENABLED ? saved.gateCompleted : true);
     if (built.every((l) => l.isSolved)) {
       setHasWon(true);
     }
